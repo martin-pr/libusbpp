@@ -102,10 +102,10 @@ ReportNode::Impl::Impl() {
 }
 
 ReportNode::Impl::Impl(const Impl &other) :
-	parent(other.parent),
-	item(other.item),
 	globalState(other.globalState),
-	localState(other.localState) {
+	localState(other.localState),
+	item(other.item),
+	parent(other.parent) {
 
 }
 
@@ -113,10 +113,10 @@ ReportNode::Impl::Impl(const Ptr &parent_,
                        const ReportItem &item_,
                        const GlobalItemMap &globalState_,
                        const LocalItemMap &localState_) :
-	parent(parent_),
-	item(item_),
 	globalState(globalState_),
-	localState(localState_) {
+	localState(localState_),
+	item(item_),
+	parent(parent_) {
 
 }
 
