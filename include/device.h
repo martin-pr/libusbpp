@@ -24,8 +24,8 @@
 
 #include "buffer.h"
 
-class libusb_device_descriptor;
-class libusb_device;
+struct libusb_device_descriptor;
+struct libusb_device;
 
 namespace Usbpp {
 
