@@ -63,7 +63,7 @@ ReportItem::Impl::Impl(const uint8_t* data_) {
 	uint8_t bTag = (data_[0] >> 4) & 0xf;
 
 	// long item
-	if (bTag == 0xf0) {
+	if (bTag == 0xf) {
 		if(bSize != 2) {
 			/* error - bSize is 2 for long items */
 		}
