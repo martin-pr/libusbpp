@@ -1,6 +1,6 @@
 
 add_library(usbpp
-	context.cpp device.cpp # basic libusb wrapper
+	buffer.cpp context.cpp device.cpp # basic libusb wrapper
 	hiddevice.cpp hidreport.cpp # HID support
 	mscbw.cpp mscsw.cpp msdevice.cpp msscsiinquiry.cpp msscsiinquiryresponse.cpp # mass storage
 )

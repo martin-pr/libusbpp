@@ -18,6 +18,7 @@
 #include "msscsiinquiryresponse.h"
 
 #include <cassert>
+#include <utility>
 
 namespace Usbpp {
 namespace MassStorage {

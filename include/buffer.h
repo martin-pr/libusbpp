@@ -18,129 +18,42 @@
 #ifndef LIBUSBPP_BUFFER_H_
 #define LIBUSBPP_BUFFER_H_
 
-#include <algorithm>
-#include <cstdlib>
-#include <cstring>
+#include <cstddef>
+#include <cstdint>
 
 namespace Usbpp {
 
 /**
  * A static-sized buffer.
  */
-template <typename T>
-class Buffer {
+class ByteBuffer {
 public:
-	Buffer() : mdata(nullptr), msize(0) {
-		
-	}
+	ByteBuffer();
+	ByteBuffer(std::size_t msize_);
+	ByteBuffer(const std::uint8_t* data_, std::size_t msize_);
+	ByteBuffer(const ByteBuffer &other);
+	ByteBuffer(ByteBuffer &&other) noexcept;
+	~ByteBuffer();
 
-	Buffer(std::size_t msize_) {
-		mdata = static_cast<T*>(malloc(msize_ * sizeof(T)));
-		msize = msize_;
-	}
-	
-	Buffer(const T* data_, std::size_t msize_) {
-		mdata = static_cast<T*>(malloc(msize_ * sizeof(T)));
-		std::memcpy(mdata, data_, msize_ * sizeof(T));
-		msize = msize_;
-	}
-	
-	Buffer(const Buffer<T> &other) {
-		mdata = static_cast<T*>(malloc(other.msize * sizeof(T)));
-		std::memcpy(mdata, other.mdata, other.msize * sizeof(T));
-		msize = other.msize;
-	}
-	
-	Buffer(Buffer<T> &&other) noexcept {
-		mdata = other.mdata;
-		other.mdata = nullptr;
-		msize = other.msize;
-		other.msize = 0;
-	}
-	
-	~Buffer() {
-		if (mdata) {
-			free(mdata);
-			mdata = nullptr;
-			msize = 0;
-		}
-	}
-	
-	Buffer<T> &operator=(const Buffer<T> &other) {
-		if (this == &other) {
-			return *this;
-		}
-		if(msize == other.msize) {
-			std::memcpy(mdata, other.mdata, msize);
-			return *this;
-		}
-		Buffer tmp(other);
-		std::swap(mdata, tmp.mdata);
-		std::swap(msize, tmp.msize);
-		return *this;
-	}
-	
-	Buffer<T> &operator=(Buffer<T> &&other) noexcept {
-		if (this == &other) {
-			return *this;
-		}
-		std::swap(mdata, other.mdata);
-		std::swap(msize, other.msize);
-		return *this;
-	}
+	ByteBuffer &operator=(const ByteBuffer &other);
+	ByteBuffer &operator=(ByteBuffer &&other) noexcept;
 
-	T &operator[](std::size_t i) {
-		return mdata[i];
-	}
+	std::uint8_t &operator[](std::size_t i);
+	const std::uint8_t &operator[](std::size_t i) const;
+	
+	ByteBuffer &append(const ByteBuffer &other);
 
-	const T &operator[](std::size_t i) const {
-		return mdata[i];
-	}
-	
-	Buffer<T> &append(const Buffer<T> &other) {
-		T *tmp(static_cast<T*>(realloc(mdata, msize + other.msize)));
-		if (tmp == nullptr) {
-			// TODO: throw
-		}
-		// copy the contents
-		memcpy(tmp + msize, other.mdata, other.msize);
-		// update the current buffer
-		mdata = tmp;
-		msize += other.msize;
-		
-		return *this;
-	}
+	void resize(std::size_t size);
 
-	void resize(std::size_t size) {
-		if(size == msize) {
-			return;
-		}
-		T *tmp(static_cast<T*>(realloc(mdata, size)));
-		if (tmp == nullptr) {
-			// TODO: throw
-		}
-		mdata = tmp;
-		msize = size;
-	}
-	
-	std::size_t size() const {
-		return msize;
-	}
-	
-	T* data() {
-		return mdata;
-	}
-	
-	const T* data() const {
-		return mdata;
-	}
-	
+	std::size_t size() const ;
+
+	std::uint8_t* data();
+	const std::uint8_t* data() const;
+
 private:
-	T* mdata;
+	std::uint8_t* mdata;
 	std::size_t msize;
 };
-
-typedef Buffer<uint8_t> ByteBuffer;
 
 }
 
