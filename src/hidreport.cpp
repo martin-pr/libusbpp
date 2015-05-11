@@ -26,14 +26,14 @@ namespace HID {
 class ReportItem::Impl {
 public:
 	Format format; // short/long
-	uint8_t dataSize; // bSize/bDataSize
+	std::uint8_t dataSize; // bSize/bDataSize
 	Type type; // bType
-	uint8_t tag; // bTag/bLongItemTag
+	std::uint8_t tag; // bTag/bLongItemTag
 	std::size_t bytelen; // length of the binary representation in bytes
 	ByteBuffer data;
 
 	Impl();
-	explicit Impl(const uint8_t* data_);
+	explicit Impl(const std::uint8_t* data_);
 	Impl(const Impl &other);
 	~Impl();
 };
@@ -57,10 +57,10 @@ ReportItem::Impl::Impl(const Impl &other) :
 
 }
 
-ReportItem::Impl::Impl(const uint8_t* data_) {
-	uint8_t bSize = data_[0] & 0x3;
-	uint8_t bType = (data_[0] >> 2) & 0x3;
-	uint8_t bTag = (data_[0] >> 4) & 0xf;
+ReportItem::Impl::Impl(const std::uint8_t* data_) {
+	std::uint8_t bSize = data_[0] & 0x3;
+	std::uint8_t bType = (data_[0] >> 2) & 0x3;
+	std::uint8_t bTag = (data_[0] >> 4) & 0xf;
 
 	// long item
 	if (bTag == 0xf) {
@@ -122,7 +122,8 @@ ReportNode::Impl::Impl(const Impl &other) :
 	globalState(other.globalState),
 	localState(other.localState),
 	item(other.item),
-	parent(other.parent) {
+	parent(other.parent),
+	children(other.children) {
 
 }
 
@@ -153,7 +154,7 @@ ReportItem::~ReportItem() {
 
 }
 
-ReportItem::ReportItem(const uint8_t* data) : pimpl(new Impl(data)) {
+ReportItem::ReportItem(const std::uint8_t* data) : pimpl(new Impl(data)) {
 
 }
 
@@ -182,7 +183,7 @@ ReportItem::Format ReportItem::getFormat() const {
 	return pimpl->format;
 }
 
-uint8_t ReportItem::getDataSize() const {
+std::uint8_t ReportItem::getDataSize() const {
 	return pimpl->dataSize;
 }
 
@@ -190,7 +191,7 @@ ReportItem::Type ReportItem::getType() const {
 	return pimpl->type;
 }
 
-uint8_t ReportItem::getTag() const {
+std::uint8_t ReportItem::getTag() const {
 	return pimpl->tag;
 }
 
@@ -262,13 +263,14 @@ const ReportNode::List &ReportNode::getChildren() const {
 	return pimpl->children;
 }
 
-ReportTree::ReportTree(const ByteBuffer& buffer) {
+ReportTree::ReportTree(const ByteBuffer& buffer) :
+	root(std::make_shared<ReportNode>()) {
+
 	typedef std::stack<ReportNode::GlobalItemMap> GlobalItemTableStack;
 	GlobalItemTableStack globalItemTableStack;
 	ReportNode::GlobalItemMap globalState;
 	ReportNode::LocalItemMap localState;
 
-	root = std::make_shared<ReportNode>();
 	ReportNode::Ptr lastroot = root;
 
 	for (std::size_t i = 0; i < buffer.size();) {

@@ -96,7 +96,7 @@ public:
 	 *
 	 * \return true if the device is valid.
 	 */
-	bool isValid();
+	bool isValid() const;
 
 	/**
 	 * Open the device for use.

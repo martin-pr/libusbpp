@@ -20,8 +20,8 @@
 
 #include "buffer.h"
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <map>
 #include <vector>
@@ -39,13 +39,13 @@ public:
 		LONG
 	};
 
-	enum class Type : uint8_t {
+	enum class Type : std::uint8_t {
 		MAIN = 0x0,
 		GLOBAL = 0x1,
 		LOCAL = 0x2,
 	};
 
-	enum class TagsMain : uint8_t {
+	enum class TagsMain : std::uint8_t {
 		INPUT = 0x8,
 		OUTPUT = 0x9,
 		FEATURE = 0xb,
@@ -53,7 +53,7 @@ public:
 		END_COLLECTION = 0xc
 	};
 
-	enum class TagsGlobal : uint8_t {
+	enum class TagsGlobal : std::uint8_t {
 		USAGE_PAGE = 0x0,
 		LOGICAL_MINIMUM = 0x1,
 		LOGICAL_MAXIMUM = 0x2,
@@ -68,7 +68,7 @@ public:
 		POP = 0xb
 	};
 
-	enum class TagsLocal : uint8_t {
+	enum class TagsLocal : std::uint8_t {
 		USAGE = 0x0,
 		USAGE_MINIMUM = 0x1,
 		USAGE_MAXIMUM = 0x2,
@@ -96,7 +96,7 @@ public:
 	/**
 	 * bSize/bDataSize
 	 */
-	uint8_t getDataSize() const;
+	std::uint8_t getDataSize() const;
 	/**
 	 * bType
 	 */
@@ -104,7 +104,7 @@ public:
 	/**
 	 * bTag/bLongItemTag
 	 */
-	uint8_t getTag() const;
+	std::uint8_t getTag() const;
 	/**
 	 * the additional payload.
 	 */
@@ -117,7 +117,7 @@ private:
 	 *
 	 * Constructs the item from the binary data.
 	 */
-	explicit ReportItem(const uint8_t* data);
+	explicit ReportItem(const std::uint8_t* data);
 
 	class Impl;
 	std::unique_ptr<Impl> pimpl;

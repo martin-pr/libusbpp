@@ -101,6 +101,7 @@ Device::Impl::Impl(const Impl& other) :
 	device(other.device),
 	handle(other.handle),
 	handleRefCount(other.handleRefCount),
+	interfaceMyClaimed(other.interfaceMyClaimed),
 	interfaceRefCount(other.interfaceRefCount) {
 
 	if(device) {
@@ -175,7 +176,7 @@ Device::~Device() {
 
 }
 
-bool Device::isValid() {
+bool Device::isValid() const {
 	return pimpl->device != nullptr;
 }
 
