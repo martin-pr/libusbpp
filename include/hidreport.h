@@ -117,7 +117,7 @@ private:
 	 *
 	 * Constructs the item from the binary data.
 	 */
-	ReportItem(const uint8_t* data);
+	explicit ReportItem(const uint8_t* data);
 
 	class Impl;
 	std::unique_ptr<Impl> pimpl;
@@ -204,7 +204,7 @@ public:
 	 *
 	 * Constructs the report tree from the binary representation of the descriptor.
 	 */
-	ReportTree(const ByteBuffer &buffer);
+	explicit ReportTree(const ByteBuffer &buffer);
 	ReportTree(ReportTree &&other);
 	ReportTree &operator=(ReportTree &&other);
 	~ReportTree();

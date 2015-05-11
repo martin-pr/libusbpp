@@ -26,7 +26,7 @@ namespace SCSI {
 
 class InquiryResponse {
 public:
-    InquiryResponse(const ByteBuffer& buffer);
+    explicit InquiryResponse(const ByteBuffer& buffer);
     InquiryResponse(const InquiryResponse& other);
     InquiryResponse(InquiryResponse&& other) noexcept;
 	InquiryResponse& operator=(InquiryResponse &other) = default;

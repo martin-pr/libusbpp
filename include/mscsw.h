@@ -38,7 +38,7 @@ public:
 	};
 	
 	CommandStatusWrapper();
-	CommandStatusWrapper(const ByteBuffer &buffer);
+	explicit CommandStatusWrapper(const ByteBuffer &buffer);
 	CommandStatusWrapper(uint32_t dCSWTag, uint32_t dCSWDataResidue, uint8_t bCSWStatus);
 	virtual ~CommandStatusWrapper();
 	

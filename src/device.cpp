@@ -65,7 +65,7 @@ const char* DeviceTransferException::what() const noexcept {
 class Device::Impl {
 public:
 	Impl();
-	Impl(libusb_device *device_);
+	explicit Impl(libusb_device *device_);
 	Impl(const Impl& other);
 	~Impl();
 

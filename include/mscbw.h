@@ -36,7 +36,7 @@ public:
 	};
 	
 	CommandBlockWrapper();
-	CommandBlockWrapper(const ByteBuffer &buffer);
+	explicit CommandBlockWrapper(const ByteBuffer &buffer);
 	CommandBlockWrapper(uint32_t dCBWDataTransferLength, uint8_t bmCBWFlags, uint8_t bCBWLUN, std::vector< uint8_t > CBWCB);
 	virtual ~CommandBlockWrapper();
 	

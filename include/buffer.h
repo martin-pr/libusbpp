@@ -29,7 +29,7 @@ namespace Usbpp {
 class ByteBuffer {
 public:
 	ByteBuffer();
-	ByteBuffer(std::size_t msize_);
+	explicit ByteBuffer(std::size_t msize_);
 	ByteBuffer(const std::uint8_t* data_, std::size_t msize_);
 	ByteBuffer(const ByteBuffer &other);
 	ByteBuffer(ByteBuffer &&other) noexcept;

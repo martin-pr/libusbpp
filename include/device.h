@@ -36,7 +36,7 @@ class Context;
  */
 class DeviceException {
 public:
-	DeviceException(int error) noexcept;
+	explicit DeviceException(int error) noexcept;
 	virtual ~DeviceException();
 
 	int getError() const;
@@ -51,7 +51,7 @@ private:
  */
 class DeviceOpenException : public DeviceException {
 public:
-	DeviceOpenException(int error) noexcept;
+	explicit DeviceOpenException(int error) noexcept;
 	virtual ~DeviceOpenException();
 
 	virtual const char* what() const noexcept;
@@ -62,7 +62,7 @@ public:
  */
 class DeviceTransferException : public DeviceException {
 public:
-	DeviceTransferException(int error) noexcept;
+	explicit DeviceTransferException(int error) noexcept;
 	virtual ~DeviceTransferException();
 
 	virtual const char* what() const noexcept;
@@ -229,7 +229,7 @@ public:
 	                         unsigned int timeout) const;
 
 private:
-	Device(libusb_device *device_);
+	explicit Device(libusb_device *device_);
 	class Impl;
 	std::unique_ptr<Impl> pimpl;
 };

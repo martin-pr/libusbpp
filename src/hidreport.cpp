@@ -33,8 +33,8 @@ public:
 	ByteBuffer data;
 
 	Impl();
+	explicit Impl(const uint8_t* data_);
 	Impl(const Impl &other);
-	Impl(const uint8_t* data_);
 	~Impl();
 };
 
