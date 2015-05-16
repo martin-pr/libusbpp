@@ -32,7 +32,7 @@ namespace {
 using namespace Usbpp;
 using namespace Usbpp::MassStorage;
 
-SCSI::InquiryResponse sendInquiry(const Device *device, unsigned char endpoint, uint8_t LUN, bool explicitpage, uint8_t page = 0) {
+SCSI::InquiryResponse sendInquiry(const Device *device, unsigned char endpoint, uint8_t LUN, bool explicitpage, uint8_t page = 0) try {
 	unsigned char inEndpoint(endpoint | LIBUSB_ENDPOINT_IN);
 	ByteBuffer tmpBuf(36);
 	ByteBuffer statusBuf(13);
@@ -48,7 +48,7 @@ SCSI::InquiryResponse sendInquiry(const Device *device, unsigned char endpoint, 
 	}
 	int transferred = device->bulkTransferIn(inEndpoint, tmpBuf, 2000);
 	if (transferred <= 36) {
-		// TODO: throw
+		throw InquiryException(1);
 	}
 
 	// read status
@@ -60,36 +60,69 @@ SCSI::InquiryResponse sendInquiry(const Device *device, unsigned char endpoint, 
 		return response;
 	}
 
-	// send inquiry with the correct allocation length
-	// the reason why 5 is added rather than 4 (as mentioned in specification)
-	// is that there are 4 bytes in the header + 1 byte for the additional length itself
-	uint16_t inquiryLength(5 + response.getAdditionalLength());
-	tmpBuf.resize(inquiryLength);
-	if (explicitpage) {
-		SCSI::Inquiry inquiry2(LUN, inquiryLength, page);
-		device->bulkTransferOut(endpoint, inquiry2.getBuffer(), 2000);
-	}
-	else {
-		SCSI::Inquiry inquiry2(LUN, inquiryLength);
-		device->bulkTransferOut(endpoint, inquiry2.getBuffer(), 2000);
-	}
-	transferred = device->bulkTransferIn(inEndpoint, tmpBuf, 2000);
+	try {
+		// send inquiry with the correct allocation length
+		// the reason why 5 is added rather than 4 (as mentioned in specification)
+		// is that there are 4 bytes in the header + 1 byte for the additional length itself
+		uint16_t inquiryLength(5 + response.getAdditionalLength());
+		tmpBuf.resize(inquiryLength);
+		if (explicitpage) {
+			SCSI::Inquiry inquiry2(LUN, inquiryLength, page);
+			device->bulkTransferOut(endpoint, inquiry2.getBuffer(), 2000);
+		}
+		else {
+			SCSI::Inquiry inquiry2(LUN, inquiryLength);
+			device->bulkTransferOut(endpoint, inquiry2.getBuffer(), 2000);
+		}
+		transferred = device->bulkTransferIn(inEndpoint, tmpBuf, 2000);
 
-	// read status
-	device->bulkTransferIn(inEndpoint, statusBuf, 2000);
+		// read status
+		device->bulkTransferIn(inEndpoint, statusBuf, 2000);
 
-	if (transferred <= 36) {
-		// return the previous result, to have at least something
+		if (transferred <= 36) {
+			// return the previous result, to have at least something
+			return response;
+		}
+	}
+	catch (const DeviceTransferException &e) {
+		// we can return the previous inquiry response
 		return response;
 	}
 
 	return SCSI::InquiryResponse(ByteBuffer(tmpBuf.data(), transferred));;
+}
+catch (const DeviceTransferException &e) {
+	throw InquiryException(e.getError());
 }
 
 }
 
 namespace Usbpp {
 namespace MassStorage {
+
+InquiryException::InquiryException(int error) noexcept : Exception(error) {
+
+}
+
+InquiryException::~InquiryException() {
+
+}
+
+const char* InquiryException::what() const noexcept {
+	return "Failed to read SCSI inquiry response";
+}
+
+SCSICommandStatusException::SCSICommandStatusException() noexcept : Exception(0) {
+
+}
+
+SCSICommandStatusException::~SCSICommandStatusException() {
+
+}
+
+const char* SCSICommandStatusException::what() const noexcept {
+	return "Failed to read command status";
+}
 
 MSDevice::MSDevice() {
 
@@ -132,8 +165,7 @@ CommandStatusWrapper MSDevice::sendCommand(unsigned char endpoint, const Command
 		return CommandStatusWrapper(std::move(tmpBuf));
 	}
 	else {
-		// TODO: throw
-		return CommandStatusWrapper();
+		throw SCSICommandStatusException();
 	}
 }
 

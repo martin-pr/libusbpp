@@ -23,6 +23,7 @@
 #include <string>
 
 #include "buffer.h"
+#include "exception.h"
 
 struct libusb_device_descriptor;
 struct libusb_device;
@@ -32,24 +33,9 @@ namespace Usbpp {
 class Context;
 
 /**
- * An exception thrown when an error occurs within device class.
- */
-class DeviceException {
-public:
-	explicit DeviceException(int error) noexcept;
-	virtual ~DeviceException();
-
-	int getError() const;
-
-	virtual const char* what() const noexcept = 0;
-private:
-	const int error;
-};
-
-/**
  * An exception when the device cannot be opened.
  */
-class DeviceOpenException : public DeviceException {
+class DeviceOpenException : public Exception {
 public:
 	explicit DeviceOpenException(int error) noexcept;
 	virtual ~DeviceOpenException();
@@ -60,7 +46,7 @@ public:
 /**
  * An exception when the transfer failed.
  */
-class DeviceTransferException : public DeviceException {
+class DeviceTransferException : public Exception {
 public:
 	explicit DeviceTransferException(int error) noexcept;
 	virtual ~DeviceTransferException();
@@ -237,5 +223,3 @@ private:
 }
 
 #endif
-
-

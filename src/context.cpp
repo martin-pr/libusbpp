@@ -22,11 +22,38 @@
 
 namespace Usbpp {
 
+ContextInitException::ContextInitException(int error) noexcept : Exception(error) {
+
+}
+
+ContextInitException::~ContextInitException() {
+
+}
+
+const char* ContextInitException::what() const noexcept {
+	return "Cannot initialize context";
+}
+
+ContextEnumerateException::ContextEnumerateException(int error) noexcept : Exception(error) {
+
+}
+
+ContextEnumerateException::~ContextEnumerateException() {
+
+}
+
+const char* ContextEnumerateException::what() const noexcept {
+	return "Cannot initialize context";
+}
+
 Context::Context()
 {
 	refcount = new int;
 	*refcount = 1;
-	libusb_init(&ctx);
+	int res = libusb_init(&ctx);
+	if (res != 0) {
+		throw ContextInitException(res);
+	}
 }
 
 Context::Context(const Context& other) : refcount(other.refcount), ctx(other.ctx)
@@ -94,8 +121,12 @@ std::vector< Device > Context::getDevices()
 {
 	libusb_device **devices;
 	int count = libusb_get_device_list(ctx, &devices);
+	if (count < 0) {
+		throw ContextEnumerateException(count);
+	}
 	
 	std::vector<Device> devicesRes;
+	devicesRes.reserve(count);
 	for (int i(0); i < count; ++i) {
 		devicesRes.push_back(Device(devices[i]));
 	}

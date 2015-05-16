@@ -18,13 +18,37 @@
 #ifndef LIBUSBPP_CONTEXT_H_
 #define LIBUSBPP_CONTEXT_H_
 
-#include "device.h"
-
 #include <vector>
+
+#include "device.h"
+#include "exception.h"
 
 struct libusb_context;
 
 namespace Usbpp {
+
+/**
+ * An exception thrown when context cannot be initialized.
+ */
+class ContextInitException : public Exception {
+public:
+	explicit ContextInitException(int error) noexcept;
+	virtual ~ContextInitException();
+
+	virtual const char* what() const noexcept;
+};
+
+/**
+ * An exception thrown when it's not possible to obtain device list.
+ */
+class ContextEnumerateException : public Exception {
+public:
+	explicit ContextEnumerateException(int error) noexcept;
+	virtual ~ContextEnumerateException();
+
+	virtual const char* what() const noexcept;
+};
+
 
 /**
  * A context.

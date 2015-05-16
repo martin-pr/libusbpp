@@ -26,19 +26,7 @@
 
 namespace Usbpp {
 
-DeviceException::DeviceException(int error_) noexcept : error(error_) {
-
-}
-
-DeviceException::~DeviceException() {
-
-}
-
-int DeviceException::getError() const {
-	return error;
-}
-
-DeviceOpenException::DeviceOpenException(int error) noexcept : DeviceException(error) {
+DeviceOpenException::DeviceOpenException(int error) noexcept : Exception(error) {
 
 }
 
@@ -50,7 +38,7 @@ const char* DeviceOpenException::what() const noexcept {
 	return "Cannot open the device";
 }
 
-DeviceTransferException::DeviceTransferException(int error) noexcept : DeviceException(error) {
+DeviceTransferException::DeviceTransferException(int error) noexcept : Exception(error) {
 
 }
 
@@ -239,12 +227,18 @@ libusb_device_descriptor Device::getDescriptor() {
 
 int Device::getConfiguration() {
 	int config;
-	libusb_get_configuration(pimpl->handle, &config);
+	int res = libusb_get_configuration(pimpl->handle, &config);
+	if (res < 0) {
+		throw DeviceTransferException(res);
+	}
 	return config;
 }
 
 void Device::setConfiguration(int bConfigurationValue) {
-	libusb_set_configuration(pimpl->handle, bConfigurationValue);
+	int res = libusb_set_configuration(pimpl->handle, bConfigurationValue);
+	if (res < 0) {
+		throw DeviceTransferException(res);
+	}
 }
 
 void Device::claimInterface(int bInterfaceNumber) {
@@ -273,7 +267,7 @@ int Device::controlTransferIn(uint8_t bmRequestType,
                                ByteBuffer &data,
                                unsigned int timeout) const {
 	assert(bmRequestType & LIBUSB_ENDPOINT_IN);
-	int res(libusb_control_transfer(pimpl->handle, bmRequestType, bRequest, wValue, wIndex, data.data(), data.size(), timeout));
+	int res = libusb_control_transfer(pimpl->handle, bmRequestType, bRequest, wValue, wIndex, data.data(), data.size(), timeout);
 	if (res < 0) {
 		throw DeviceTransferException(res);
 	}
@@ -285,7 +279,7 @@ int Device::bulkTransferIn(unsigned char endpoint,
                             unsigned int timeout) const {
 	assert(endpoint & LIBUSB_ENDPOINT_IN);
 	int transferred(0);
-	int res(libusb_bulk_transfer(pimpl->handle, endpoint, data.data(), data.size(), &transferred, timeout));
+	int res = libusb_bulk_transfer(pimpl->handle, endpoint, data.data(), data.size(), &transferred, timeout);
 	if (res != 0) {
 		throw DeviceTransferException(res);
 	}
@@ -297,7 +291,7 @@ int Device::interruptTransferIn(unsigned char endpoint,
                                 unsigned int timeout) const {
 	assert(endpoint & LIBUSB_ENDPOINT_IN);
 	int transferred(0);
-	int res(libusb_interrupt_transfer(pimpl->handle, endpoint, data.data(), data.size(), &transferred, timeout));
+	int res = libusb_interrupt_transfer(pimpl->handle, endpoint, data.data(), data.size(), &transferred, timeout);
 	if (res != 0) {
 		throw DeviceTransferException(res);
 	}
@@ -311,8 +305,8 @@ int Device::controlTransferOut(uint8_t bmRequestType,
                                 const ByteBuffer &data,
                                 unsigned int timeout) const {
 	assert((bmRequestType & LIBUSB_ENDPOINT_IN) == 0);
-	int res(libusb_control_transfer(pimpl->handle, bmRequestType, bRequest, wValue, wIndex,
-	                                const_cast<unsigned char*>(data.data()), data.size(), timeout));
+	int res = libusb_control_transfer(pimpl->handle, bmRequestType, bRequest, wValue, wIndex,
+	                                  const_cast<unsigned char*>(data.data()), data.size(), timeout);
 	if (res < 0) {
 		throw DeviceTransferException(res);
 	}
@@ -324,7 +318,8 @@ int Device::bulkTransferOut(unsigned char endpoint,
                             unsigned int timeout) const {
 	assert((endpoint & LIBUSB_ENDPOINT_IN) == 0);
 	int transferred(0);
-	int res(libusb_bulk_transfer(pimpl->handle, endpoint, const_cast<unsigned char*>(data.data()), data.size(), &transferred, timeout));
+	int res = libusb_bulk_transfer(pimpl->handle, endpoint,
+	                               const_cast<unsigned char*>(data.data()), data.size(), &transferred, timeout);
 	if (res != 0) {
 		throw DeviceTransferException(res);
 	}
@@ -336,7 +331,8 @@ int Device::interruptTransferOut(unsigned char endpoint,
                                  unsigned int timeout) const {
 	assert((endpoint & LIBUSB_ENDPOINT_IN) == 0);
 	int transferred(0);
-	int res(libusb_interrupt_transfer(pimpl->handle, endpoint, const_cast<unsigned char*>(data.data()), data.size(), &transferred, timeout));
+	int res = libusb_interrupt_transfer(pimpl->handle, endpoint,
+	                                    const_cast<unsigned char*>(data.data()), data.size(), &transferred, timeout);
 	if (res != 0) {
 		throw DeviceTransferException(res);
 	}

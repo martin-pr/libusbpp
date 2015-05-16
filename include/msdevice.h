@@ -20,6 +20,7 @@
 
 #include "buffer.h"
 #include "device.h"
+#include "exception.h"
 
 namespace Usbpp {
 namespace MassStorage {
@@ -30,6 +31,25 @@ class CommandBlockWrapper;
 namespace SCSI {
 class InquiryResponse;
 }
+
+/**
+ * An exception when the device cannot be opened.
+ */
+class InquiryException : public Exception {
+public:
+	explicit InquiryException(int error) noexcept;
+	virtual ~InquiryException();
+
+	virtual const char* what() const noexcept;
+};
+
+class SCSICommandStatusException : public Exception {
+public:
+	explicit SCSICommandStatusException() noexcept;
+	virtual ~SCSICommandStatusException();
+
+	virtual const char* what() const noexcept;
+};
 
 class MSDevice : public Device {
 public:

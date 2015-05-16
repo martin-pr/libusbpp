@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
 				dev.close();
 			}
 		}
-		catch (const Usbpp::DeviceException &e) {
+		catch (const Usbpp::Exception &e) {
 			// just silently ignore the exception and try the next device
 			continue;
 		}
@@ -171,7 +171,7 @@ int main(int argc, char *argv[]) {
 		Usbpp::HID::ReportTree report(device.getHidReport(0));
 		printNode(report.getRoot(), 0);
 	}
-	catch (const Usbpp::DeviceException &e) {
+	catch (const Usbpp::Exception &e) {
 		std::cerr << "Failed to obtain HID report descriptor!" << std::endl;
 		return 1;
 	}
