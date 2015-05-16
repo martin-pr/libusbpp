@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <new>
 
 namespace Usbpp {
 
@@ -29,17 +30,26 @@ ByteBuffer::ByteBuffer() : mdata(nullptr), msize(0) {
 
 ByteBuffer::ByteBuffer(std::size_t msize_) {
 	mdata = static_cast<std::uint8_t*>(malloc(msize_ * sizeof(std::uint8_t)));
+	if (mdata == nullptr) {
+		throw std::bad_alloc();
+	}
 	msize = msize_;
 }
 
 ByteBuffer::ByteBuffer(const std::uint8_t* data_, std::size_t msize_) {
 	mdata = static_cast<std::uint8_t*>(malloc(msize_ * sizeof(std::uint8_t)));
+	if (mdata == nullptr) {
+		throw std::bad_alloc();
+	}
 	std::memcpy(mdata, data_, msize_ * sizeof(std::uint8_t));
 	msize = msize_;
 }
 
 ByteBuffer::ByteBuffer(const ByteBuffer &other) {
 	mdata = static_cast<std::uint8_t*>(malloc(other.msize * sizeof(std::uint8_t)));
+	if (mdata == nullptr) {
+		throw std::bad_alloc();
+	}
 	std::memcpy(mdata, other.mdata, other.msize * sizeof(std::uint8_t));
 	msize = other.msize;
 }
@@ -93,7 +103,7 @@ const std::uint8_t &ByteBuffer::operator[](std::size_t i) const {
 ByteBuffer &ByteBuffer::append(const ByteBuffer &other) {
 	std::uint8_t *tmp(static_cast<std::uint8_t*>(realloc(mdata, msize + other.msize)));
 	if (tmp == nullptr) {
-		// TODO: throw
+		throw std::bad_alloc();
 	}
 	// copy the contents
 	memcpy(tmp + msize, other.mdata, other.msize);
@@ -110,7 +120,7 @@ void ByteBuffer::resize(std::size_t size) {
 	}
 	std::uint8_t *tmp(static_cast<std::uint8_t*>(realloc(mdata, size)));
 	if (tmp == nullptr) {
-		// TODO: throw
+		throw std::bad_alloc();
 	}
 	mdata = tmp;
 	msize = size;
