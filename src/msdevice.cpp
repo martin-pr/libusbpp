@@ -47,7 +47,7 @@ SCSI::InquiryResponse sendInquiry(const Device *device, unsigned char endpoint, 
 		device->bulkTransferOut(endpoint, inquiry1.getBuffer(), 2000);
 	}
 	int transferred = device->bulkTransferIn(inEndpoint, tmpBuf, 2000);
-	if (transferred <= 36) {
+	if (transferred < 36) {
 		throw InquiryException(1);
 	}
 
@@ -56,7 +56,7 @@ SCSI::InquiryResponse sendInquiry(const Device *device, unsigned char endpoint, 
 
 	SCSI::InquiryResponse response(ByteBuffer(tmpBuf.data(), transferred));
 
-	if (response.getAdditionalLength() <= 31) {
+	if (response.getAdditionalLength() < 32) {
 		return response;
 	}
 
@@ -79,7 +79,7 @@ SCSI::InquiryResponse sendInquiry(const Device *device, unsigned char endpoint, 
 		// read status
 		device->bulkTransferIn(inEndpoint, statusBuf, 2000);
 
-		if (transferred <= 36) {
+		if (transferred < 36) {
 			// return the previous result, to have at least something
 			return response;
 		}
