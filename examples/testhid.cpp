@@ -128,7 +128,7 @@ void printNode(const Usbpp::HID::ReportNode::Ptr &node, int indent) {
 	}
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) try {
 	int vendor;
 	int product;
 	if (argc != 2 || sscanf(argv[1],"%x:%x",&vendor,&product) != 2) {
@@ -177,4 +177,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	return 0;
+}
+catch (const Usbpp::Exception &e) {
+	std::cerr << e.what() << std::endl;
 }
