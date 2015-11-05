@@ -54,10 +54,8 @@ ByteBuffer::ByteBuffer(const ByteBuffer &other) {
 	msize = other.msize;
 }
 
-ByteBuffer::ByteBuffer(ByteBuffer &&other) noexcept {
-	mdata = other.mdata;
+ByteBuffer::ByteBuffer(ByteBuffer &&other) noexcept : mdata(other.mdata), msize(other.msize) {
 	other.mdata = nullptr;
-	msize = other.msize;
 	other.msize = 0;
 }
 
@@ -70,25 +68,28 @@ ByteBuffer::~ByteBuffer() {
 }
 
 ByteBuffer &ByteBuffer::operator=(const ByteBuffer &other) {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		if(msize == other.msize) {
+			std::memcpy(mdata, other.mdata, msize);
+			return *this;
+		}
+		ByteBuffer tmp(other);
+		std::swap(mdata, tmp.mdata);
+		std::swap(msize, tmp.msize);
 	}
-	if(msize == other.msize) {
-		std::memcpy(mdata, other.mdata, msize);
-		return *this;
-	}
-	ByteBuffer tmp(other);
-	std::swap(mdata, tmp.mdata);
-	std::swap(msize, tmp.msize);
 	return *this;
 }
 
 ByteBuffer &ByteBuffer::operator=(ByteBuffer &&other) noexcept {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		if (mdata) {
+			free(mdata);
+		}
+		mdata = other.mdata;
+		msize = other.msize;
+		other.mdata = nullptr;
+		other.msize = 0;
 	}
-	std::swap(mdata, other.mdata);
-	std::swap(msize, other.msize);
 	return *this;
 }
 

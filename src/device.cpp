@@ -169,22 +169,18 @@ bool Device::isValid() const {
 }
 
 Device& Device::operator=(const Device& other) {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		Device tmp(other);
+		std::swap(pimpl, tmp.pimpl);
 	}
-
-	Device tmp(other);
-	std::swap(pimpl, tmp.pimpl);
 
 	return *this;
 }
 
 Device& Device::operator=(Device && other) noexcept {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		pimpl = std::move(other.pimpl);
 	}
-
-	std::swap(pimpl, other.pimpl);
 
 	return *this;
 }

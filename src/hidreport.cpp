@@ -159,22 +159,18 @@ ReportItem::ReportItem(const std::uint8_t* data) : pimpl(new Impl(data)) {
 }
 
 ReportItem &ReportItem::operator=(const ReportItem &other) {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		ReportItem tmp(other);
+		std::swap(pimpl, tmp.pimpl);
 	}
-
-	ReportItem tmp(other);
-	std::swap(pimpl, tmp.pimpl);
 
 	return *this;
 }
 
 ReportItem &ReportItem::operator=(ReportItem &&other) noexcept {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		pimpl = std::move(other.pimpl);
 	}
-
-	std::swap(pimpl, other.pimpl);
 
 	return *this;
 }
@@ -224,22 +220,18 @@ ReportNode::~ReportNode() {
 }
 
 ReportNode &ReportNode::operator=(const ReportNode &other) {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		ReportNode tmp(other);
+		std::swap(pimpl, tmp.pimpl);
 	}
-
-	ReportNode tmp(other);
-	std::swap(pimpl, tmp.pimpl);
 
 	return *this;
 }
 
 ReportNode &ReportNode::operator=(ReportNode &&other) noexcept {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		pimpl = std::move(other.pimpl);
 	}
-
-	std::swap(pimpl, other.pimpl);
 
 	return *this;
 }
@@ -339,11 +331,9 @@ ReportTree::ReportTree(ReportTree &&other) : root(std::move(other.root)) {
 }
 
 ReportTree &ReportTree::operator=(ReportTree &&other) {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		root = std::move(other.root);
 	}
-
-	std::swap(root, other.root);
 
 	return *this;
 }

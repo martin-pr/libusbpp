@@ -82,37 +82,33 @@ Context::~Context()
 
 Context& Context::operator=(const Context& other)
 {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		// both point to the same context => do nothing
+		if (refcount == other.refcount) {
+			// if the refcount is the same, the context is the same, too
+			assert(ctx == other.ctx);
+
+			return *this;
+		}
+
+		// close the current context if we are the only object holding it and do the assignment
+		if (*refcount == 1) {
+			libusb_exit(ctx);
+		}
+		refcount = other.refcount;
+		ctx = other.ctx;
+		++(*refcount);
 	}
-	
-	// both point to the same context => do nothing
-	if (refcount == other.refcount) {
-		// if the refcount is the same, the context is the same, too
-		assert(ctx == other.ctx);
-		
-		return *this;
-	}
-	
-	// close the current context if we are the only object holding it and do the assignment
-	if (*refcount == 1) {
-		libusb_exit(ctx);
-	}
-	refcount = other.refcount;
-	ctx = other.ctx;
-	++(*refcount);
 	
 	return *this;
 }
 
 Context& Context::operator=(Context &&other) noexcept
 {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		std::swap(refcount, other.refcount);
+		std::swap(ctx, other.ctx);
 	}
-	
-	std::swap(refcount, other.refcount);
-	std::swap(ctx, other.ctx);
 	
 	return *this;
 }

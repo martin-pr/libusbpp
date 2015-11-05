@@ -77,20 +77,18 @@ CommandStatusWrapper::CommandStatusWrapper(CommandStatusWrapper&& other) noexcep
 
 CommandStatusWrapper& CommandStatusWrapper::operator=(const CommandStatusWrapper& other)
 {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		mdata = other.mdata;
 	}
-	mdata = other.mdata;
 	
 	return *this;
 }
 
 CommandStatusWrapper& CommandStatusWrapper::operator=(CommandStatusWrapper&& other) noexcept
 {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		mdata = std::move(other.mdata);
 	}
-	std::swap(mdata, other.mdata);
 	
 	return *this;
 }

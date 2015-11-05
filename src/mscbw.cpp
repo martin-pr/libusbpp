@@ -95,21 +95,18 @@ CommandBlockWrapper::CommandBlockWrapper(CommandBlockWrapper&& other) noexcept :
 
 CommandBlockWrapper& CommandBlockWrapper::operator=(const CommandBlockWrapper& other)
 {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		mdata = other.mdata;
 	}
-	mdata = other.mdata;
 	
 	return *this;
 }
 
 CommandBlockWrapper& CommandBlockWrapper::operator=(CommandBlockWrapper&& other) noexcept
 {
-	if (this == &other) {
-		return *this;
+	if (this != &other) {
+		mdata = std::move(other.mdata);
 	}
-	
-	std::swap(mdata, other.mdata);
 	
 	return *this;
 }
