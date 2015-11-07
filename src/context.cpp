@@ -46,29 +46,31 @@ const char* ContextEnumerateException::what() const noexcept {
 	return "Cannot initialize context";
 }
 
-Context::Context()
-{
+class Context::Impl {
+public:
+	Impl();
+	Impl(const Impl &other);
+	~Impl();
+
+	int *refcount;
+	libusb_context *ctx;
+};
+
+Context::Impl::Impl() {
 	refcount = new int;
 	*refcount = 1;
 	int res = libusb_init(&ctx);
 	if (res != 0) {
+		delete refcount;
 		throw ContextInitException(res);
 	}
 }
 
-Context::Context(const Context& other) : refcount(other.refcount), ctx(other.ctx)
-{
+Context::Impl::Impl(const Usbpp::Context::Impl& other): refcount(other.refcount), ctx(other.ctx) {
 	++(*refcount);
 }
 
-Context::Context(Context&& other) noexcept: refcount(other.refcount), ctx(other.ctx)
-{
-	other.refcount = nullptr;
-	other.ctx = nullptr;
-}
-
-Context::~Context()
-{
+Context::Impl::~Impl() {
 	if (refcount) {
 		--(*refcount);
 		if (*refcount == 0) {
@@ -80,24 +82,38 @@ Context::~Context()
 	}
 }
 
+
+Context::Context() : pimpl(new Impl)
+{
+
+}
+
+Context::Context(const Context& other) : pimpl(new Impl(*(other.pimpl)))
+{
+
+}
+
+Context::Context(Context&& other) noexcept: pimpl(std::move(other.pimpl))
+{
+
+}
+
+Context::~Context()
+{
+
+}
+
 Context& Context::operator=(const Context& other)
 {
 	if (this != &other) {
-		// both point to the same context => do nothing
-		if (refcount == other.refcount) {
-			// if the refcount is the same, the context is the same, too
-			assert(ctx == other.ctx);
-
+		// both share the same refcount pointer => they point to the same context
+		if (pimpl->refcount ==other.pimpl->refcount) {
+			assert(pimpl->ctx == other.pimpl->ctx);
 			return *this;
 		}
 
-		// close the current context if we are the only object holding it and do the assignment
-		if (*refcount == 1) {
-			libusb_exit(ctx);
-		}
-		refcount = other.refcount;
-		ctx = other.ctx;
-		++(*refcount);
+		std::unique_ptr<Impl> tmp(new Impl(*(other.pimpl)));
+		std::swap(tmp, pimpl);
 	}
 	
 	return *this;
@@ -106,8 +122,7 @@ Context& Context::operator=(const Context& other)
 Context& Context::operator=(Context &&other) noexcept
 {
 	if (this != &other) {
-		std::swap(refcount, other.refcount);
-		std::swap(ctx, other.ctx);
+		pimpl = std::move(other.pimpl);
 	}
 	
 	return *this;
@@ -116,7 +131,7 @@ Context& Context::operator=(Context &&other) noexcept
 std::vector< Device > Context::getDevices()
 {
 	libusb_device **devices;
-	int count = libusb_get_device_list(ctx, &devices);
+	int count = libusb_get_device_list(pimpl->ctx, &devices);
 	if (count < 0) {
 		throw ContextEnumerateException(count);
 	}

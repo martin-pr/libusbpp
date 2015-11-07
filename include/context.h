@@ -18,12 +18,11 @@
 #ifndef LIBUSBPP_CONTEXT_H_
 #define LIBUSBPP_CONTEXT_H_
 
+#include <memory>
 #include <vector>
 
 #include "device.h"
 #include "exception.h"
-
-struct libusb_context;
 
 namespace Usbpp {
 
@@ -76,8 +75,8 @@ public:
 	std::vector<Device> getDevices();
 	
 private:
-	int *refcount;
-	libusb_context *ctx;
+	class Impl;
+	std::unique_ptr<Impl> pimpl;
 };
 
 }
