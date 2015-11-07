@@ -73,7 +73,7 @@ public:
 	 * \return list of USB devices
 	 */
 	std::vector<Device> getDevices();
-	
+
 private:
 	class Impl;
 	std::unique_ptr<Impl> pimpl;

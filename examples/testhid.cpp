@@ -67,8 +67,7 @@ std::map<uint8_t, const char*> TAGS_MAIN = {
 
 }
 
-std::ostream& operator<<(std::ostream& os, const Usbpp::HID::ReportItem &item)
-{
+std::ostream& operator<<(std::ostream& os, const Usbpp::HID::ReportItem &item) {
 	std::string type;
 	std::string tagString;
 	switch (item.getType()) {
@@ -99,7 +98,7 @@ std::ostream& operator<<(std::ostream& os, const Usbpp::HID::ReportItem &item)
 	os << "0x" << std::hex << std::setfill('0') << std::setw(2) << static_cast<int>(item.getTag());
 	os << " (" << tagString << ")";
 	os << " [ ";
-	for(std::size_t i = 0; i < item.getData().size(); ++i) {
+	for (std::size_t i = 0; i < item.getData().size(); ++i) {
 		os << std::hex << std::setfill('0') << std::setw(2) << static_cast<int>(item.getData()[i]) << " ";
 	}
 	os << "]";
@@ -107,23 +106,22 @@ std::ostream& operator<<(std::ostream& os, const Usbpp::HID::ReportItem &item)
 	return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const Usbpp::HID::ReportNode::Ptr &node)
-{
+std::ostream& operator<<(std::ostream& os, const Usbpp::HID::ReportNode::Ptr &node) {
 	return os << node->getItem();
 }
 
 void printNode(const Usbpp::HID::ReportNode::Ptr &node, int indent) {
 	std::cout << std::string(indent, '\t') << node << std::endl;
 	std::cout << std::string(indent, '\t') << "  GLOBAL STATE" << std::endl;
-	for( auto state : node->getGlobalState() ) {
+	for ( auto state : node->getGlobalState() ) {
 		std::cout << std::string(indent, '\t') << "  --" << (state.second) << std::endl;
 	}
 	std::cout << std::string(indent, '\t') << "  LOCAL STATE" << std::endl;
-	for( auto state : node->getLocalState() ) {
+	for ( auto state : node->getLocalState() ) {
 		std::cout << std::string(indent, '\t') << "  --" << (state.second) << std::endl;
 	}
 
-	for(auto child : node->getChildren()) {
+	for (auto child : node->getChildren()) {
 		printNode(child, indent+1);
 	}
 }

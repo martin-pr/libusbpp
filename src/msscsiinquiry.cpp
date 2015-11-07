@@ -45,13 +45,11 @@ Inquiry::Inquiry(uint8_t LUN, uint16_t allocationLength, uint8_t page) :
 	assert(allocationLength >= 36);
 }
 
-Inquiry::Inquiry(const CommandBlockWrapper& other): CommandBlockWrapper(other)
-{
+Inquiry::Inquiry(const CommandBlockWrapper& other): CommandBlockWrapper(other) {
 
 }
 
-Inquiry::Inquiry(CommandBlockWrapper&& other): CommandBlockWrapper(std::move(other))
-{
+Inquiry::Inquiry(CommandBlockWrapper&& other): CommandBlockWrapper(std::move(other)) {
 
 }
 

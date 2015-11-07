@@ -44,10 +44,10 @@ HIDDevice::HIDDevice(HIDDevice&& device) noexcept: Device(std::move(device)) {
 ReportTree HIDDevice::getHidReport(int bInterfaceNumber) const {
 	ByteBuffer tmpBuf(4096);
 	int res(controlTransferIn(LIBUSB_ENDPOINT_IN | LIBUSB_RECIPIENT_INTERFACE,
-	                  LIBUSB_REQUEST_GET_DESCRIPTOR,
-	                  (LIBUSB_DT_REPORT << 8)|bInterfaceNumber,
-	                  0,
-	                  tmpBuf, 2000));
+	                          LIBUSB_REQUEST_GET_DESCRIPTOR,
+	                          (LIBUSB_DT_REPORT << 8)|bInterfaceNumber,
+	                          0,
+	                          tmpBuf, 2000));
 	tmpBuf.resize(res);
 	return ReportTree(tmpBuf);
 }

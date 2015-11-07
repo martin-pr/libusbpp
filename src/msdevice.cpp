@@ -140,14 +140,13 @@ MSDevice::MSDevice(MSDevice&& device) noexcept: Device(std::move(device)) {
 
 }
 
-CommandStatusWrapper MSDevice::sendCommand(unsigned char endpoint, const CommandBlockWrapper& command, ByteBuffer *data)
-{
+CommandStatusWrapper MSDevice::sendCommand(unsigned char endpoint, const CommandBlockWrapper& command, ByteBuffer *data) {
 	// an "in" endpoint derived from the endpoint
 	unsigned char inEndpoint(endpoint | LIBUSB_ENDPOINT_IN);
-	
+
 	// send command
 	bulkTransferOut(endpoint, command.getBuffer(), 2000);
-	
+
 	// if the command is an outgoing command that expects a response, read it
 	if ((endpoint & LIBUSB_ENDPOINT_IN) == 0 && command.getTransferLength() != 0) {
 		ByteBuffer tmpBuf(command.getTransferLength());
@@ -157,7 +156,7 @@ CommandStatusWrapper MSDevice::sendCommand(unsigned char endpoint, const Command
 			*data = std::move(tmpBuf);
 		}
 	}
-	
+
 	// read status
 	ByteBuffer tmpBuf(13);
 	int transferred = bulkTransferIn(inEndpoint, tmpBuf, 2000);
@@ -173,8 +172,7 @@ SCSI::InquiryResponse MSDevice::sendInquiry(unsigned char endpoint, uint8_t LUN)
 	return ::sendInquiry(this, endpoint, LUN, false);
 }
 
-SCSI::InquiryResponse MSDevice::sendInquiry(unsigned char endpoint, uint8_t LUN, uint8_t page) const
-{
+SCSI::InquiryResponse MSDevice::sendInquiry(unsigned char endpoint, uint8_t LUN, uint8_t page) const {
 	return ::sendInquiry(this, endpoint, LUN, true, page);
 }
 

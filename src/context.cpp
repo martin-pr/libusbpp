@@ -83,28 +83,23 @@ Context::Impl::~Impl() {
 }
 
 
-Context::Context() : pimpl(new Impl)
-{
+Context::Context() : pimpl(new Impl) {
 
 }
 
-Context::Context(const Context& other) : pimpl(new Impl(*(other.pimpl)))
-{
+Context::Context(const Context& other) : pimpl(new Impl(*(other.pimpl))) {
 
 }
 
-Context::Context(Context&& other) noexcept: pimpl(std::move(other.pimpl))
-{
+Context::Context(Context&& other) noexcept: pimpl(std::move(other.pimpl)) {
 
 }
 
-Context::~Context()
-{
+Context::~Context() {
 
 }
 
-Context& Context::operator=(const Context& other)
-{
+Context& Context::operator=(const Context& other) {
 	if (this != &other) {
 		// both share the same refcount pointer => they point to the same context
 		if (pimpl->refcount ==other.pimpl->refcount) {
@@ -115,35 +110,33 @@ Context& Context::operator=(const Context& other)
 		std::unique_ptr<Impl> tmp(new Impl(*(other.pimpl)));
 		std::swap(tmp, pimpl);
 	}
-	
+
 	return *this;
 }
 
-Context& Context::operator=(Context &&other) noexcept
-{
+Context& Context::operator=(Context &&other) noexcept {
 	if (this != &other) {
 		pimpl = std::move(other.pimpl);
 	}
-	
+
 	return *this;
 }
 
-std::vector< Device > Context::getDevices()
-{
+std::vector< Device > Context::getDevices() {
 	libusb_device **devices;
 	int count = libusb_get_device_list(pimpl->ctx, &devices);
 	if (count < 0) {
 		throw ContextEnumerateException(count);
 	}
-	
+
 	std::vector<Device> devicesRes;
 	devicesRes.reserve(count);
 	for (int i(0); i < count; ++i) {
 		devicesRes.push_back(Device(devices[i]));
 	}
-	
+
 	libusb_free_device_list(devices, 0);
-	
+
 	return devicesRes;
 }
 

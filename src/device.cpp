@@ -92,7 +92,7 @@ Device::Impl::Impl(const Impl& other) :
 	interfaceMyClaimed(other.interfaceMyClaimed),
 	interfaceRefCount(other.interfaceRefCount) {
 
-	if(device) {
+	if (device) {
 		libusb_ref_device(device);
 	}
 	if (handleRefCount) {
@@ -257,11 +257,11 @@ void Device::releaseInterface(int bInterfaceNumber) {
 }
 
 int Device::controlTransferIn(uint8_t bmRequestType,
-                               uint8_t bRequest,
-                               uint16_t wValue,
-                               uint16_t wIndex,
-                               ByteBuffer &data,
-                               unsigned int timeout) const {
+                              uint8_t bRequest,
+                              uint16_t wValue,
+                              uint16_t wIndex,
+                              ByteBuffer &data,
+                              unsigned int timeout) const {
 	assert(bmRequestType & LIBUSB_ENDPOINT_IN);
 	int res = libusb_control_transfer(pimpl->handle, bmRequestType, bRequest, wValue, wIndex, data.data(), data.size(), timeout);
 	if (res < 0) {
@@ -271,8 +271,8 @@ int Device::controlTransferIn(uint8_t bmRequestType,
 }
 
 int Device::bulkTransferIn(unsigned char endpoint,
-                            ByteBuffer &data,
-                            unsigned int timeout) const {
+                           ByteBuffer &data,
+                           unsigned int timeout) const {
 	assert(endpoint & LIBUSB_ENDPOINT_IN);
 	int transferred(0);
 	int res = libusb_bulk_transfer(pimpl->handle, endpoint, data.data(), data.size(), &transferred, timeout);
@@ -295,11 +295,11 @@ int Device::interruptTransferIn(unsigned char endpoint,
 }
 
 int Device::controlTransferOut(uint8_t bmRequestType,
-                                uint8_t bRequest,
-                                uint16_t wValue,
-                                uint16_t wIndex,
-                                const ByteBuffer &data,
-                                unsigned int timeout) const {
+                               uint8_t bRequest,
+                               uint16_t wValue,
+                               uint16_t wIndex,
+                               const ByteBuffer &data,
+                               unsigned int timeout) const {
 	assert((bmRequestType & LIBUSB_ENDPOINT_IN) == 0);
 	int res = libusb_control_transfer(pimpl->handle, bmRequestType, bRequest, wValue, wIndex,
 	                                  const_cast<unsigned char*>(data.data()), data.size(), timeout);

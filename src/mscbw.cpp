@@ -37,7 +37,7 @@ CommandBlockWrapper::CommandBlockWrapper(const ByteBuffer &buffer) {
 	mdata = buffer;
 	mdata.resize(CBW_LEN);
 	// fill the rest with zeroes
-	if(buffer.size() != CBW_LEN) {
+	if (buffer.size() != CBW_LEN) {
 		std::memset(&mdata[buffer.size()], 0, CBW_LEN - buffer.size());
 	}
 }
@@ -46,11 +46,10 @@ CommandBlockWrapper::CommandBlockWrapper(uint32_t dCBWDataTransferLength,
                                          uint8_t bmCBWFlags,
                                          uint8_t bCBWLUN,
                                          std::vector<uint8_t> CBWCB) :
-	mdata(CBW_LEN)
-{
+	mdata(CBW_LEN) {
 	// only CBWCB needs to be zeroed as the rest will be written into
 	std::memset(&mdata[15], 0, CBW_LEN - 15);
-	
+
 	// dCBWSignature
 	mdata[0] = 'U';
 	mdata[1] = 'S';
@@ -93,26 +92,23 @@ CommandBlockWrapper::CommandBlockWrapper(CommandBlockWrapper&& other) noexcept :
 
 }
 
-CommandBlockWrapper& CommandBlockWrapper::operator=(const CommandBlockWrapper& other)
-{
+CommandBlockWrapper& CommandBlockWrapper::operator=(const CommandBlockWrapper& other) {
 	if (this != &other) {
 		mdata = other.mdata;
 	}
-	
+
 	return *this;
 }
 
-CommandBlockWrapper& CommandBlockWrapper::operator=(CommandBlockWrapper&& other) noexcept
-{
+CommandBlockWrapper& CommandBlockWrapper::operator=(CommandBlockWrapper&& other) noexcept {
 	if (this != &other) {
 		mdata = std::move(other.mdata);
 	}
-	
+
 	return *this;
 }
 
-uint32_t CommandBlockWrapper::getTag() const
-{
+uint32_t CommandBlockWrapper::getTag() const {
 	uint32_t tag;
 	tag = mdata[7];
 	tag = (tag << 8) | mdata[6];
@@ -121,8 +117,7 @@ uint32_t CommandBlockWrapper::getTag() const
 	return tag;
 }
 
-uint32_t CommandBlockWrapper::getTransferLength() const
-{
+uint32_t CommandBlockWrapper::getTransferLength() const {
 	uint32_t len;
 	len = mdata[11];
 	len = (len << 8) | mdata[10];
@@ -131,42 +126,35 @@ uint32_t CommandBlockWrapper::getTransferLength() const
 	return len;
 }
 
-CommandBlockWrapper::Flags CommandBlockWrapper::getFlags() const
-{
+CommandBlockWrapper::Flags CommandBlockWrapper::getFlags() const {
 	if ((mdata[12] & static_cast<uint8_t>(Flags::INVALID)) != 0) {
 		return Flags::INVALID;
 	}
 	return static_cast<Flags>(mdata[12]);
 }
 
-uint8_t CommandBlockWrapper::getLun() const
-{
+uint8_t CommandBlockWrapper::getLun() const {
 	return mdata[13];
 }
 
-uint8_t CommandBlockWrapper::getCommandBlockLength() const
-{
+uint8_t CommandBlockWrapper::getCommandBlockLength() const {
 	return mdata[14];
 }
 
-std::vector< uint8_t > CommandBlockWrapper::getCommandBlock() const
-{
+std::vector< uint8_t > CommandBlockWrapper::getCommandBlock() const {
 	return std::vector<uint8_t>(&mdata[15], &mdata[15] + getCommandBlockLength());
 }
 
-const ByteBuffer &CommandBlockWrapper::getBuffer() const
-{
+const ByteBuffer &CommandBlockWrapper::getBuffer() const {
 	return mdata;
 }
 
-uint32_t CommandBlockWrapper::generateTag() const
-{
+uint32_t CommandBlockWrapper::generateTag() const {
 	static uint32_t tag;
 	return tag++;
 }
 
-std::ostream& operator<<(std::ostream& os, const CommandBlockWrapper::Flags& flags)
-{
+std::ostream& operator<<(std::ostream& os, const CommandBlockWrapper::Flags& flags) {
 	switch (flags) {
 		case Usbpp::MassStorage::CommandBlockWrapper::Flags::DATA_IN:
 			return os << "DATA_IN (0x00)";
@@ -175,7 +163,7 @@ std::ostream& operator<<(std::ostream& os, const CommandBlockWrapper::Flags& fla
 		case Usbpp::MassStorage::CommandBlockWrapper::Flags::INVALID:
 			return os << "INVALID (0x7F)";
 	}
-	
+
 	return os;
 }
 

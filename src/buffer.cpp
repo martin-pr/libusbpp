@@ -69,7 +69,7 @@ ByteBuffer::~ByteBuffer() {
 
 ByteBuffer &ByteBuffer::operator=(const ByteBuffer &other) {
 	if (this != &other) {
-		if(msize == other.msize) {
+		if (msize == other.msize) {
 			std::memcpy(mdata, other.mdata, msize);
 			return *this;
 		}
@@ -116,7 +116,7 @@ ByteBuffer &ByteBuffer::append(const ByteBuffer &other) {
 }
 
 void ByteBuffer::resize(std::size_t size) {
-	if(size == msize) {
+	if (size == msize) {
 		return;
 	}
 	std::uint8_t *tmp(static_cast<std::uint8_t*>(realloc(mdata, size)));

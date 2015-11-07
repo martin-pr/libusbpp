@@ -26,12 +26,12 @@ namespace SCSI {
 
 class InquiryResponse {
 public:
-    explicit InquiryResponse(const ByteBuffer& buffer);
-    InquiryResponse(const InquiryResponse& other);
-    InquiryResponse(InquiryResponse&& other) noexcept;
+	explicit InquiryResponse(const ByteBuffer& buffer);
+	InquiryResponse(const InquiryResponse& other);
+	InquiryResponse(InquiryResponse&& other) noexcept;
 	InquiryResponse& operator=(InquiryResponse &other) = default;
 	InquiryResponse& operator=(InquiryResponse &&other) noexcept = default;
-	
+
 	uint8_t getPeripheralQualifier() const;
 	uint8_t getPeripheralDeviceType() const;
 	bool getRMB() const;
@@ -54,32 +54,32 @@ public:
 	bool getSYNC() const;
 	bool getLINKED() const;
 	bool getCMDQUE() const;
-	
+
 	ByteBuffer getVendorIdentification() const;
 	ByteBuffer getProductIdentification() const;
 	ByteBuffer getProductRevisionLevel() const;
-	
+
 	/********************************
 	 * fields that may not be present
 	 *******************************/
-	
+
 	ByteBuffer getDriverSerialNumber() const;
 	/**
 	 * Get the vendor unique bits: bit 44 - 55
 	 */
 	ByteBuffer getVendorUnique() const;
-	
+
 	uint8_t getClocking() const;
 	bool getQAS() const;
 	bool getIUS() const;
-	
+
 	/**
 	 * Get version descriptor.
-	 * 
+	 *
 	 * \param descriptor a descriptor in range 0-7
 	 */
 	ByteBuffer getVersionDescriptor(unsigned int descriptor) const;
-	
+
 	ByteBuffer getVendorSpecific() const;
 
 private:

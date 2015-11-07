@@ -64,14 +64,14 @@ ReportItem::Impl::Impl(const std::uint8_t* data_) {
 
 	// long item
 	if (bTag == 0xf) {
-		if(bSize != 2) {
+		if (bSize != 2) {
 			/* error - bSize is 2 for long items */
 		}
 		format = Format::LONG;
 		dataSize = data_[1];
 		type = static_cast<Type>(bType);
 		tag = data_[2];
-		if(dataSize > 0) {
+		if (dataSize > 0) {
 			data = ByteBuffer(&data_[3], dataSize);
 		}
 		/* move the iterator to the next item */
@@ -83,7 +83,7 @@ ReportItem::Impl::Impl(const std::uint8_t* data_) {
 		dataSize = bSize != 3 ? bSize : 4;
 		type = static_cast<Type>(bType);
 		tag = bTag;
-		if(dataSize > 0) {
+		if (dataSize > 0) {
 			data = ByteBuffer(&data_[1], dataSize);
 		}
 		/* move the iterator to the next item */
@@ -270,9 +270,9 @@ ReportTree::ReportTree(const ByteBuffer& buffer) :
 		ReportItem item(&(buffer.data()[i]));
 		i += item.pimpl->bytelen;
 
-		switch(item.getType()) {
+		switch (item.getType()) {
 			case ReportItem::Type::MAIN: {
-				switch(static_cast<ReportItem::TagsMain>(item.getTag())) {
+				switch (static_cast<ReportItem::TagsMain>(item.getTag())) {
 					case ReportItem::TagsMain::COLLECTION: {
 						ReportNode::Ptr newnode(new ReportNode(lastroot, item, globalState, localState));
 						lastroot->pimpl->children.push_back(newnode);
@@ -296,12 +296,12 @@ ReportTree::ReportTree(const ByteBuffer& buffer) :
 				break;
 			}
 			case ReportItem::Type::GLOBAL: {
-				switch(static_cast<ReportItem::TagsGlobal>(item.getTag())) {
+				switch (static_cast<ReportItem::TagsGlobal>(item.getTag())) {
 					case ReportItem::TagsGlobal::PUSH:
 						globalItemTableStack.push(globalState);
 						break;
 					case ReportItem::TagsGlobal::POP:
-						if(globalItemTableStack.empty()) {
+						if (globalItemTableStack.empty()) {
 							globalState.clear();
 						}
 						else {

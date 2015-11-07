@@ -34,33 +34,33 @@ public:
 		DATA_IN = 0x80,
 		INVALID = 0x7F // either obsolete or reserved
 	};
-	
+
 	CommandBlockWrapper();
 	explicit CommandBlockWrapper(const ByteBuffer &buffer);
 	CommandBlockWrapper(uint32_t dCBWDataTransferLength, uint8_t bmCBWFlags, uint8_t bCBWLUN, std::vector< uint8_t > CBWCB);
 	virtual ~CommandBlockWrapper();
-	
+
 	CommandBlockWrapper(const CommandBlockWrapper &other);
 	CommandBlockWrapper(CommandBlockWrapper &&other) noexcept;
 	CommandBlockWrapper &operator=(const CommandBlockWrapper &other);
 	CommandBlockWrapper &operator=(CommandBlockWrapper &&other) noexcept;
-	
+
 	uint32_t getTag() const;
 	uint32_t getTransferLength() const;
 	Flags getFlags() const;
-	
+
 	/**
 	 * Get the device Logical Unit Number (LUN) to which the command
 	 * block is being sent.
-	 * 
+	 *
 	 * This function doesn't check whether the returned LUN is valid.
 	 */
 	uint8_t getLun() const;
 	uint8_t getCommandBlockLength() const;
 	std::vector<uint8_t> getCommandBlock() const;
-	
+
 	const ByteBuffer &getBuffer() const;
-	
+
 protected:
 	virtual uint32_t generateTag() const;
 	ByteBuffer mdata;

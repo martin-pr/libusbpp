@@ -36,23 +36,23 @@ public:
 		OBSOLETE, // this should never happen
 		RESERVED // this should never happen
 	};
-	
+
 	CommandStatusWrapper();
 	explicit CommandStatusWrapper(const ByteBuffer &buffer);
 	CommandStatusWrapper(uint32_t dCSWTag, uint32_t dCSWDataResidue, uint8_t bCSWStatus);
 	virtual ~CommandStatusWrapper();
-	
+
 	CommandStatusWrapper(const CommandStatusWrapper &other);
 	CommandStatusWrapper(CommandStatusWrapper&& other) noexcept;
 	CommandStatusWrapper &operator=(const CommandStatusWrapper &other);
 	CommandStatusWrapper &operator=(CommandStatusWrapper&& other) noexcept;
-	
+
 	uint32_t getTag() const;
 	uint32_t getDataResidue() const;
 	Status getStatus() const;
 
 	const ByteBuffer &getBuffer() const;
-	
+
 private:
 	ByteBuffer mdata;
 };

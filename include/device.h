@@ -164,11 +164,11 @@ public:
 	 * @return number of bytes actually transferred.
 	 */
 	int controlTransferIn(uint8_t bmRequestType,
-	                       uint8_t bRequest,
-	                       uint16_t wValue,
-	                       uint16_t wIndex,
-	                       ByteBuffer &data,
-	                       unsigned int timeout) const;
+	                      uint8_t bRequest,
+	                      uint16_t wValue,
+	                      uint16_t wIndex,
+	                      ByteBuffer &data,
+	                      unsigned int timeout) const;
 	/**
 	 * Bulk transfer from the device to the computer ("receive").
 	 *
@@ -192,11 +192,11 @@ public:
 	 * @return number of bytes actually transferred.
 	 */
 	int controlTransferOut(uint8_t bmRequestType,
-	                        uint8_t bRequest,
-	                        uint16_t wValue,
-	                        uint16_t wIndex,
-	                        const ByteBuffer &data,
-	                        unsigned int timeout) const;
+	                       uint8_t bRequest,
+	                       uint16_t wValue,
+	                       uint16_t wIndex,
+	                       const ByteBuffer &data,
+	                       unsigned int timeout) const;
 	/**
 	 * Bulk transfer from computer to device ("send").
 	 *

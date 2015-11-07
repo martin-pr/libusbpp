@@ -40,7 +40,7 @@ public:
 
 	std::uint8_t &operator[](std::size_t i);
 	const std::uint8_t &operator[](std::size_t i) const;
-	
+
 	ByteBuffer &append(const ByteBuffer &other);
 
 	void resize(std::size_t size);
