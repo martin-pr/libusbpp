@@ -24,6 +24,8 @@
 #include <unordered_set>
 #include <sstream>
 
+#include "deviceimpl.h"
+
 namespace Usbpp {
 
 DeviceOpenException::DeviceOpenException(int error) noexcept : Exception(error) {
@@ -49,25 +51,6 @@ DeviceTransferException::~DeviceTransferException() {
 const char* DeviceTransferException::what() const noexcept {
 	return "Transfer failed";
 }
-
-class Device::Impl {
-public:
-	Impl();
-	explicit Impl(libusb_device *device_);
-	Impl(const Impl& other);
-	~Impl();
-
-	void close();
-	void releaseInterface(int bInterfaceNumber);
-
-	libusb_device *device;
-	libusb_device_handle *handle;
-	int *handleRefCount;
-	// a set of interfaces claimed by the device
-	std::unordered_set<int> interfaceMyClaimed;
-	// a shared map storing the reference counts for all interfaces
-	std::unordered_map<int, int> *interfaceRefCount;
-};
 
 Device::Impl::Impl() :
 	device(nullptr),
@@ -162,6 +145,14 @@ Device::Device(libusb_device* device_) : pimpl(new Impl(device_)) {
 
 Device::~Device() {
 
+}
+
+bool Device::operator==(const Device &other) {
+	return pimpl->device == other.pimpl->device;
+}
+
+bool Device::operator!=(const Device &other) {
+	return pimpl->device != other.pimpl->device;
 }
 
 bool Device::isValid() const {

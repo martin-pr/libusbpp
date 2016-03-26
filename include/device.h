@@ -24,6 +24,7 @@
 
 #include "buffer.h"
 #include "exception.h"
+#include "stddevicehash.h"
 
 struct libusb_device_descriptor;
 struct libusb_device;
@@ -62,6 +63,7 @@ public:
 class Device {
 public:
 	friend class Context;
+	friend struct std::hash<Device>;
 
 	/**
 	 * Default constructor required for use within standard containers.
@@ -76,6 +78,15 @@ public:
 
 	Device& operator=(const Device &other);
 	Device& operator=(Device &&other) noexcept;
+
+	/**
+	 * Test whether two devices are the same.
+	 */
+	bool operator==(const Device &other);
+	/**
+	 * Test whether two devices are the same.
+	 */
+	bool operator!=(const Device &other);
 
 	/**
 	 * Check whether the device is valid USB device.
