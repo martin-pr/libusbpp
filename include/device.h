@@ -82,11 +82,11 @@ public:
 	/**
 	 * Test whether two devices are the same.
 	 */
-	bool operator==(const Device &other);
+	bool operator==(const Device &other) const;
 	/**
 	 * Test whether two devices are the same.
 	 */
-	bool operator!=(const Device &other);
+	bool operator!=(const Device &other) const;
 
 	/**
 	 * Check whether the device is valid USB device.

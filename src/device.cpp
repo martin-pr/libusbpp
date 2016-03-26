@@ -147,11 +147,11 @@ Device::~Device() {
 
 }
 
-bool Device::operator==(const Device &other) {
+bool Device::operator==(const Device &other) const {
 	return pimpl->device == other.pimpl->device;
 }
 
-bool Device::operator!=(const Device &other) {
+bool Device::operator!=(const Device &other) const {
 	return pimpl->device != other.pimpl->device;
 }
 
