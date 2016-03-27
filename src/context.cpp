@@ -183,7 +183,7 @@ void Context::Impl::handleEvent(libusb_device *usbdevice, libusb_hotplug_event e
 			// find device
 			Device& device = devices.at(usbdevice);
 			// execute the callbacks
-			for(auto &func : funcConnected) {
+			for (auto &func : funcConnected) {
 				func.second(device);
 			}
 			break;
@@ -193,7 +193,7 @@ void Context::Impl::handleEvent(libusb_device *usbdevice, libusb_hotplug_event e
 			DeviceMap::iterator it(devices.find(usbdevice));
 			Device device = (it != devices.end() ? it->second : Device(usbdevice));
 			// execute the callbacks
-			for(auto &func : funcDisconnected) {
+			for (auto &func : funcDisconnected) {
 				func.second(device);
 			}
 			// erase the device from internal map
