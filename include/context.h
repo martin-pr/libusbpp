@@ -18,6 +18,7 @@
 #ifndef LIBUSBPP_CONTEXT_H_
 #define LIBUSBPP_CONTEXT_H_
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -48,6 +49,17 @@ public:
 	virtual const char* what() const noexcept;
 };
 
+/**
+ * An exception thrown when it's not possible to register callbacks.
+ */
+class ContextRegisterCBException : public Exception {
+public:
+	explicit ContextRegisterCBException(int error) noexcept;
+	virtual ~ContextRegisterCBException();
+
+	virtual const char* what() const noexcept;
+};
+
 
 /**
  * A context.
@@ -74,8 +86,41 @@ public:
 	 */
 	std::vector<Device> getDevices();
 
-private:
+	/**
+	 * Register a function that is called when a new device is connected.
+	 *
+	 * The function is called asynchronously from a context event loop.
+	 *
+	 * \param func function to call
+	 * \return handle that can be used in unregisterDeviceConnected()
+	 */
+	int registerDeviceConnected(const std::function<void(Device&)> &func);
+	/**
+	 * Register a fucntion that is called when a device is removed.
+	 *
+	 * The function is called asynchronously from a context event loop.
+	 *
+	 * \param func function to call
+	 * \return handle that can be used in unregisterDeviceDisconnected()
+	 */
+	int registerDeviceDisconnected(const std::function<void(Device&)> &func);
+
+	/**
+	 * Unregister a device connected callback function.
+	 *
+	 * \param handle handle returned by registerDeviceConnected
+	 */
+	void unregisterDeviceConnected(int handle);
+	/**
+	 * Unregister a device disconnected callback function.
+	 *
+	 * \param handle handle returned by registerDeviceDisconnected
+	 */
+	void unregisterDeviceDisconnected(int handle);
+
+	// in this case Impl must be public for the hotplug handler to be able to access it
 	class Impl;
+private:
 	std::unique_ptr<Impl> pimpl;
 };
 
