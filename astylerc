@@ -4,6 +4,7 @@
 --min-conditional-indent=0
 --max-instatement-indent=60
 --pad-header
+--align-pointer=type
 --break-closing-brackets
 --add-brackets
 --mode=c

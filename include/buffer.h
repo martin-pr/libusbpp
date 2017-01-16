@@ -31,17 +31,17 @@ public:
 	ByteBuffer();
 	explicit ByteBuffer(std::size_t msize_);
 	ByteBuffer(const std::uint8_t* data_, std::size_t msize_);
-	ByteBuffer(const ByteBuffer &other);
-	ByteBuffer(ByteBuffer &&other) noexcept;
+	ByteBuffer(const ByteBuffer& other);
+	ByteBuffer(ByteBuffer&& other) noexcept;
 	~ByteBuffer();
 
-	ByteBuffer &operator=(const ByteBuffer &other);
-	ByteBuffer &operator=(ByteBuffer &&other) noexcept;
+	ByteBuffer& operator=(const ByteBuffer& other);
+	ByteBuffer& operator=(ByteBuffer&& other) noexcept;
 
-	std::uint8_t &operator[](std::size_t i);
-	const std::uint8_t &operator[](std::size_t i) const;
+	std::uint8_t& operator[](std::size_t i);
+	const std::uint8_t& operator[](std::size_t i) const;
 
-	ByteBuffer &append(const ByteBuffer &other);
+	ByteBuffer& append(const ByteBuffer& other);
 
 	void resize(std::size_t size);
 
@@ -51,8 +51,8 @@ public:
 	const std::uint8_t* data() const;
 
 private:
-	std::uint8_t* mdata;
-	std::size_t msize;
+	std::uint8_t* m_data;
+	std::size_t m_size;
 };
 
 }

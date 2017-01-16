@@ -67,7 +67,7 @@ std::map<uint8_t, const char*> TAGS_MAIN = {
 
 }
 
-std::ostream& operator<<(std::ostream& os, const Usbpp::HID::ReportItem &item) {
+std::ostream& operator<<(std::ostream& os, const Usbpp::HID::ReportItem& item) {
 	std::string type;
 	std::string tagString;
 	switch (item.getType()) {
@@ -106,11 +106,11 @@ std::ostream& operator<<(std::ostream& os, const Usbpp::HID::ReportItem &item) {
 	return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const Usbpp::HID::ReportNode::Ptr &node) {
+std::ostream& operator<<(std::ostream& os, const Usbpp::HID::ReportNode::Ptr& node) {
 	return os << node->getItem();
 }
 
-void printNode(const Usbpp::HID::ReportNode::Ptr &node, int indent) {
+void printNode(const Usbpp::HID::ReportNode::Ptr& node, int indent) {
 	std::cout << std::string(indent, '\t') << node << std::endl;
 	std::cout << std::string(indent, '\t') << "  GLOBAL STATE" << std::endl;
 	for ( auto state : node->getGlobalState() ) {
@@ -126,7 +126,7 @@ void printNode(const Usbpp::HID::ReportNode::Ptr &node, int indent) {
 	}
 }
 
-int main(int argc, char *argv[]) try {
+int main(int argc, char* argv[]) try {
 	int vendor;
 	int product;
 	if (argc != 2 || sscanf(argv[1],"%x:%x",&vendor,&product) != 2) {
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) try {
 				dev.close();
 			}
 		}
-		catch (const Usbpp::Exception &e) {
+		catch (const Usbpp::Exception& e) {
 			// just silently ignore the exception and try the next device
 			continue;
 		}
@@ -169,13 +169,13 @@ int main(int argc, char *argv[]) try {
 		Usbpp::HID::ReportTree report(device.getHidReport(0));
 		printNode(report.getRoot(), 0);
 	}
-	catch (const Usbpp::Exception &e) {
+	catch (const Usbpp::Exception& e) {
 		std::cerr << "Failed to obtain HID report descriptor!" << std::endl;
 		return 1;
 	}
 
 	return 0;
 }
-catch (const Usbpp::Exception &e) {
+catch (const Usbpp::Exception& e) {
 	std::cerr << e.what() << std::endl;
 }

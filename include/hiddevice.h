@@ -35,12 +35,12 @@ public:
 	using Device::Device;
 
 	HIDDevice();
-	HIDDevice(const Device &device);
-	HIDDevice(const HIDDevice &device);
-	HIDDevice(HIDDevice &&device) noexcept;
+	HIDDevice(const Device& device);
+	HIDDevice(const HIDDevice& device);
+	HIDDevice(HIDDevice&& device) noexcept;
 
-	HIDDevice& operator=(const HIDDevice &other) = default;
-	HIDDevice& operator=(HIDDevice &&other) noexcept = default;
+	HIDDevice& operator=(const HIDDevice& other) = default;
+	HIDDevice& operator=(HIDDevice&& other) noexcept = default;
 
 	/**
 	 * Get the USB HID report descriptor.

@@ -36,14 +36,14 @@ public:
 	};
 
 	CommandBlockWrapper();
-	explicit CommandBlockWrapper(const ByteBuffer &buffer);
+	explicit CommandBlockWrapper(const ByteBuffer& buffer);
 	CommandBlockWrapper(uint32_t dCBWDataTransferLength, uint8_t bmCBWFlags, uint8_t bCBWLUN, std::vector< uint8_t > CBWCB);
 	virtual ~CommandBlockWrapper();
 
-	CommandBlockWrapper(const CommandBlockWrapper &other);
-	CommandBlockWrapper(CommandBlockWrapper &&other) noexcept;
-	CommandBlockWrapper &operator=(const CommandBlockWrapper &other);
-	CommandBlockWrapper &operator=(CommandBlockWrapper &&other) noexcept;
+	CommandBlockWrapper(const CommandBlockWrapper& other);
+	CommandBlockWrapper(CommandBlockWrapper&& other) noexcept;
+	CommandBlockWrapper& operator=(const CommandBlockWrapper& other);
+	CommandBlockWrapper& operator=(CommandBlockWrapper&& other) noexcept;
 
 	uint32_t getTag() const;
 	uint32_t getTransferLength() const;
@@ -59,14 +59,14 @@ public:
 	uint8_t getCommandBlockLength() const;
 	std::vector<uint8_t> getCommandBlock() const;
 
-	const ByteBuffer &getBuffer() const;
+	const ByteBuffer& getBuffer() const;
 
 protected:
 	virtual uint32_t generateTag() const;
-	ByteBuffer mdata;
+	ByteBuffer m_data;
 };
 
-std::ostream &operator<<(std::ostream &os, const CommandBlockWrapper::Flags &flags);
+std::ostream& operator<<(std::ostream& os, const CommandBlockWrapper::Flags& flags);
 
 }
 }

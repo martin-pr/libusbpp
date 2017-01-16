@@ -24,119 +24,121 @@
 
 namespace Usbpp {
 
-ByteBuffer::ByteBuffer() : mdata(nullptr), msize(0) {
+ByteBuffer::ByteBuffer()
+	: m_data(nullptr), m_size(0) {
 
 }
 
-ByteBuffer::ByteBuffer(std::size_t msize_) {
-	mdata = static_cast<std::uint8_t*>(malloc(msize_ * sizeof(std::uint8_t)));
-	if (mdata == nullptr) {
+ByteBuffer::ByteBuffer(std::size_t size)
+	: m_size(size) {
+	m_data = static_cast<std::uint8_t*>(malloc(size * sizeof(std::uint8_t)));
+	if (m_data == nullptr) {
 		throw std::bad_alloc();
 	}
-	msize = msize_;
 }
 
-ByteBuffer::ByteBuffer(const std::uint8_t* data_, std::size_t msize_) {
-	mdata = static_cast<std::uint8_t*>(malloc(msize_ * sizeof(std::uint8_t)));
-	if (mdata == nullptr) {
+ByteBuffer::ByteBuffer(const std::uint8_t* data_, std::size_t size)
+	: m_size(size) {
+	m_data = static_cast<std::uint8_t*>(malloc(size * sizeof(std::uint8_t)));
+	if (m_data == nullptr) {
 		throw std::bad_alloc();
 	}
-	std::memcpy(mdata, data_, msize_ * sizeof(std::uint8_t));
-	msize = msize_;
+	std::memcpy(m_data, data_, size * sizeof(std::uint8_t));
 }
 
-ByteBuffer::ByteBuffer(const ByteBuffer &other) {
-	mdata = static_cast<std::uint8_t*>(malloc(other.msize * sizeof(std::uint8_t)));
-	if (mdata == nullptr) {
+ByteBuffer::ByteBuffer(const ByteBuffer& other)
+	:m_size(other.m_size) {
+	m_data = static_cast<std::uint8_t*>(malloc(other.m_size * sizeof(std::uint8_t)));
+	if (m_data == nullptr) {
 		throw std::bad_alloc();
 	}
-	std::memcpy(mdata, other.mdata, other.msize * sizeof(std::uint8_t));
-	msize = other.msize;
+	std::memcpy(m_data, other.m_data, other.m_size * sizeof(std::uint8_t));
 }
 
-ByteBuffer::ByteBuffer(ByteBuffer &&other) noexcept : mdata(other.mdata), msize(other.msize) {
-	other.mdata = nullptr;
-	other.msize = 0;
+ByteBuffer::ByteBuffer(ByteBuffer&& other) noexcept
+	: m_data(other.m_data), m_size(other.m_size) {
+	other.m_data = nullptr;
+	other.m_size = 0;
 }
 
 ByteBuffer::~ByteBuffer() {
-	if (mdata) {
-		free(mdata);
-		mdata = nullptr;
-		msize = 0;
+	if (m_data) {
+		free(m_data);
+		m_data = nullptr;
+		m_size = 0;
 	}
 }
 
-ByteBuffer &ByteBuffer::operator=(const ByteBuffer &other) {
+ByteBuffer& ByteBuffer::operator=(const ByteBuffer& other) {
 	if (this != &other) {
-		if (msize == other.msize) {
-			std::memcpy(mdata, other.mdata, msize);
+		if (m_size == other.m_size) {
+			std::memcpy(m_data, other.m_data, m_size);
 			return *this;
 		}
 		ByteBuffer tmp(other);
-		std::swap(mdata, tmp.mdata);
-		std::swap(msize, tmp.msize);
+		std::swap(m_data, tmp.m_data);
+		std::swap(m_size, tmp.m_size);
 	}
 	return *this;
 }
 
-ByteBuffer &ByteBuffer::operator=(ByteBuffer &&other) noexcept {
+ByteBuffer& ByteBuffer::operator=(ByteBuffer&& other) noexcept {
 	if (this != &other) {
-		if (mdata) {
-			free(mdata);
+		if (m_data) {
+			free(m_data);
 		}
-		mdata = other.mdata;
-		msize = other.msize;
-		other.mdata = nullptr;
-		other.msize = 0;
+		m_data = other.m_data;
+		m_size = other.m_size;
+		other.m_data = nullptr;
+		other.m_size = 0;
 	}
 	return *this;
 }
 
-std::uint8_t &ByteBuffer::operator[](std::size_t i) {
-	return mdata[i];
+std::uint8_t& ByteBuffer::operator[](std::size_t i) {
+	return m_data[i];
 }
 
-const std::uint8_t &ByteBuffer::operator[](std::size_t i) const {
-	return mdata[i];
+const std::uint8_t& ByteBuffer::operator[](std::size_t i) const {
+	return m_data[i];
 }
 
-ByteBuffer &ByteBuffer::append(const ByteBuffer &other) {
-	std::uint8_t *tmp(static_cast<std::uint8_t*>(realloc(mdata, msize + other.msize)));
+ByteBuffer& ByteBuffer::append(const ByteBuffer& other) {
+	std::uint8_t* tmp(static_cast<std::uint8_t*>(realloc(m_data, m_size + other.m_size)));
 	if (tmp == nullptr) {
 		throw std::bad_alloc();
 	}
 	// copy the contents
-	memcpy(tmp + msize, other.mdata, other.msize);
+	memcpy(tmp + m_size, other.m_data, other.m_size);
 	// update the current buffer
-	mdata = tmp;
-	msize += other.msize;
+	m_data = tmp;
+	m_size += other.m_size;
 
 	return *this;
 }
 
 void ByteBuffer::resize(std::size_t size) {
-	if (size == msize) {
+	if (size == m_size) {
 		return;
 	}
-	std::uint8_t *tmp(static_cast<std::uint8_t*>(realloc(mdata, size)));
+	std::uint8_t* tmp(static_cast<std::uint8_t*>(realloc(m_data, size)));
 	if (tmp == nullptr) {
 		throw std::bad_alloc();
 	}
-	mdata = tmp;
-	msize = size;
+	m_data = tmp;
+	m_size = size;
 }
 
 std::size_t ByteBuffer::size() const {
-	return msize;
+	return m_size;
 }
 
 std::uint8_t* ByteBuffer::data() {
-	return mdata;
+	return m_data;
 }
 
 const std::uint8_t* ByteBuffer::data() const {
-	return mdata;
+	return m_data;
 }
 
 }

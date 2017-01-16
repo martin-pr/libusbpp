@@ -25,35 +25,35 @@ namespace HID {
 
 class ReportItem::Impl {
 public:
-	Format format; // short/long
-	std::uint8_t dataSize; // bSize/bDataSize
-	Type type; // bType
-	std::uint8_t tag; // bTag/bLongItemTag
-	std::size_t bytelen; // length of the binary representation in bytes
-	ByteBuffer data;
+	Format m_format; // short/long
+	std::uint8_t m_dataSize; // bSize/bDataSize
+	Type m_type; // bType
+	std::uint8_t m_tag; // bTag/bLongItemTag
+	std::size_t m_bytelen; // length of the binary representation in bytes
+	ByteBuffer m_data;
 
 	Impl();
 	explicit Impl(const std::uint8_t* data_);
-	Impl(const Impl &other);
+	Impl(const Impl& other);
 	~Impl();
 };
 
 ReportItem::Impl::Impl() :
-	format(Format::SHORT),
-	dataSize(0),
-	type(Type::MAIN),
-	tag(0),
-	bytelen(0) {
+	m_format(Format::SHORT),
+	m_dataSize(0),
+	m_type(Type::MAIN),
+	m_tag(0),
+	m_bytelen(0) {
 
 };
 
-ReportItem::Impl::Impl(const Impl &other) :
-	format(other.format),
-	dataSize(other.dataSize),
-	type(other.type),
-	tag(other.tag),
-	bytelen(other.bytelen),
-	data(other.data) {
+ReportItem::Impl::Impl(const Impl& other) :
+	m_format(other.m_format),
+	m_dataSize(other.m_dataSize),
+	m_type(other.m_type),
+	m_tag(other.m_tag),
+	m_bytelen(other.m_bytelen),
+	m_data(other.m_data) {
 
 }
 
@@ -67,27 +67,27 @@ ReportItem::Impl::Impl(const std::uint8_t* data_) {
 		if (bSize != 2) {
 			/* error - bSize is 2 for long items */
 		}
-		format = Format::LONG;
-		dataSize = data_[1];
-		type = static_cast<Type>(bType);
-		tag = data_[2];
-		if (dataSize > 0) {
-			data = ByteBuffer(&data_[3], dataSize);
+		m_format = Format::LONG;
+		m_dataSize = data_[1];
+		m_type = static_cast<Type>(bType);
+		m_tag = data_[2];
+		if (m_dataSize > 0) {
+			m_data = ByteBuffer(&data_[3], m_dataSize);
 		}
 		/* move the iterator to the next item */
-		bytelen = dataSize + 3;
+		m_bytelen = m_dataSize + 3;
 	}
 	// short item
 	else {
-		format = Format::SHORT;
-		dataSize = bSize != 3 ? bSize : 4;
-		type = static_cast<Type>(bType);
-		tag = bTag;
-		if (dataSize > 0) {
-			data = ByteBuffer(&data_[1], dataSize);
+		m_format = Format::SHORT;
+		m_dataSize = bSize != 3 ? bSize : 4;
+		m_type = static_cast<Type>(bType);
+		m_tag = bTag;
+		if (m_dataSize > 0) {
+			m_data = ByteBuffer(&data_[1], m_dataSize);
 		}
 		/* move the iterator to the next item */
-		bytelen = dataSize + 1;
+		m_bytelen = m_dataSize + 1;
 	}
 }
 
@@ -98,43 +98,43 @@ ReportItem::Impl::~Impl() {
 class ReportNode::Impl {
 public:
 	// state
-	GlobalItemMap globalState;
-	LocalItemMap localState;
+	GlobalItemMap m_globalState;
+	LocalItemMap m_localState;
 	// the actual item with data
-	const ReportItem item;
+	const ReportItem m_item;
 	// structural members
-	const Ptr parent;
-	List children;
+	const Ptr m_parent;
+	List m_children;
 
 	Impl();
-	Impl(const Impl &other);
-	Impl(const Ptr &parent_,
-	     const ReportItem &item_,
-	     const GlobalItemMap &globalState_,
-	     const LocalItemMap &localState_);
+	Impl(const Impl& other);
+	Impl(const Ptr& parent_,
+	     const ReportItem& item_,
+	     const GlobalItemMap& globalState_,
+	     const LocalItemMap& localState_);
 };
 
 ReportNode::Impl::Impl() {
 
 }
 
-ReportNode::Impl::Impl(const Impl &other) :
-	globalState(other.globalState),
-	localState(other.localState),
-	item(other.item),
-	parent(other.parent),
-	children(other.children) {
+ReportNode::Impl::Impl(const Impl& other) :
+	m_globalState(other.m_globalState),
+	m_localState(other.m_localState),
+	m_item(other.m_item),
+	m_parent(other.m_parent),
+	m_children(other.m_children) {
 
 }
 
-ReportNode::Impl::Impl(const Ptr &parent_,
-                       const ReportItem &item_,
-                       const GlobalItemMap &globalState_,
-                       const LocalItemMap &localState_) :
-	globalState(globalState_),
-	localState(localState_),
-	item(item_),
-	parent(parent_) {
+ReportNode::Impl::Impl(const Ptr& parent_,
+                       const ReportItem& item_,
+                       const GlobalItemMap& globalState_,
+                       const LocalItemMap& localState_) :
+	m_globalState(globalState_),
+	m_localState(localState_),
+	m_item(item_),
+	m_parent(parent_) {
 
 }
 
@@ -142,11 +142,11 @@ ReportItem::ReportItem() : pimpl(new Impl) {
 
 }
 
-ReportItem::ReportItem(const ReportItem &other) : pimpl(new Impl(*other.pimpl)) {
+ReportItem::ReportItem(const ReportItem& other) : pimpl(new Impl(*other.pimpl)) {
 
 }
 
-ReportItem::ReportItem(ReportItem &&other) : pimpl(std::move(other.pimpl)) {
+ReportItem::ReportItem(ReportItem&& other) : pimpl(std::move(other.pimpl)) {
 
 }
 
@@ -158,7 +158,7 @@ ReportItem::ReportItem(const std::uint8_t* data) : pimpl(new Impl(data)) {
 
 }
 
-ReportItem &ReportItem::operator=(const ReportItem &other) {
+ReportItem& ReportItem::operator=(const ReportItem& other) {
 	if (this != &other) {
 		ReportItem tmp(other);
 		std::swap(pimpl, tmp.pimpl);
@@ -167,7 +167,7 @@ ReportItem &ReportItem::operator=(const ReportItem &other) {
 	return *this;
 }
 
-ReportItem &ReportItem::operator=(ReportItem &&other) noexcept {
+ReportItem& ReportItem::operator=(ReportItem&& other) noexcept {
 	if (this != &other) {
 		pimpl = std::move(other.pimpl);
 	}
@@ -176,42 +176,42 @@ ReportItem &ReportItem::operator=(ReportItem &&other) noexcept {
 }
 
 ReportItem::Format ReportItem::getFormat() const {
-	return pimpl->format;
+	return pimpl->m_format;
 }
 
 std::uint8_t ReportItem::getDataSize() const {
-	return pimpl->dataSize;
+	return pimpl->m_dataSize;
 }
 
 ReportItem::Type ReportItem::getType() const {
-	return pimpl->type;
+	return pimpl->m_type;
 }
 
 std::uint8_t ReportItem::getTag() const {
-	return pimpl->tag;
+	return pimpl->m_tag;
 }
 
-const ByteBuffer &ReportItem::getData() const {
-	return pimpl->data;
+const ByteBuffer& ReportItem::getData() const {
+	return pimpl->m_data;
 }
 
 ReportNode::ReportNode() : pimpl(new Impl) {
 
 }
 
-ReportNode::ReportNode(const Ptr &parent_,
-                       const ReportItem &item_,
-                       const GlobalItemMap &globalState_,
-                       const LocalItemMap &localState_) :
+ReportNode::ReportNode(const Ptr& parent_,
+                       const ReportItem& item_,
+                       const GlobalItemMap& globalState_,
+                       const LocalItemMap& localState_) :
 	pimpl(new Impl(parent_, item_, globalState_, localState_)) {
 
 }
 
-ReportNode::ReportNode(const ReportNode &other) : pimpl(new Impl(*other.pimpl)) {
+ReportNode::ReportNode(const ReportNode& other) : pimpl(new Impl(*other.pimpl)) {
 
 }
 
-ReportNode::ReportNode(ReportNode &&other) noexcept : pimpl(std::move(other.pimpl)) {
+ReportNode::ReportNode(ReportNode&& other) noexcept : pimpl(std::move(other.pimpl)) {
 
 }
 
@@ -219,7 +219,7 @@ ReportNode::~ReportNode() {
 
 }
 
-ReportNode &ReportNode::operator=(const ReportNode &other) {
+ReportNode& ReportNode::operator=(const ReportNode& other) {
 	if (this != &other) {
 		ReportNode tmp(other);
 		std::swap(pimpl, tmp.pimpl);
@@ -228,7 +228,7 @@ ReportNode &ReportNode::operator=(const ReportNode &other) {
 	return *this;
 }
 
-ReportNode &ReportNode::operator=(ReportNode &&other) noexcept {
+ReportNode& ReportNode::operator=(ReportNode&& other) noexcept {
 	if (this != &other) {
 		pimpl = std::move(other.pimpl);
 	}
@@ -236,58 +236,58 @@ ReportNode &ReportNode::operator=(ReportNode &&other) noexcept {
 	return *this;
 }
 
-const ReportNode::GlobalItemMap &ReportNode::getGlobalState() const {
-	return pimpl->globalState;
+const ReportNode::GlobalItemMap& ReportNode::getGlobalState() const {
+	return pimpl->m_globalState;
 }
 
-const ReportNode::LocalItemMap &ReportNode::getLocalState() const {
-	return pimpl->localState;
+const ReportNode::LocalItemMap& ReportNode::getLocalState() const {
+	return pimpl->m_localState;
 }
-const ReportItem &ReportNode::getItem() const {
-	return pimpl->item;
-}
-
-const ReportNode::Ptr &ReportNode::getParent() const {
-	return pimpl->parent;
+const ReportItem& ReportNode::getItem() const {
+	return pimpl->m_item;
 }
 
-const ReportNode::List &ReportNode::getChildren() const {
-	return pimpl->children;
+const ReportNode::Ptr& ReportNode::getParent() const {
+	return pimpl->m_parent;
+}
+
+const ReportNode::List& ReportNode::getChildren() const {
+	return pimpl->m_children;
 }
 
 ReportTree::ReportTree(const ByteBuffer& buffer) :
-	root(std::make_shared<ReportNode>()) {
+	m_root(std::make_shared<ReportNode>()) {
 
 	typedef std::stack<ReportNode::GlobalItemMap> GlobalItemTableStack;
 	GlobalItemTableStack globalItemTableStack;
 	ReportNode::GlobalItemMap globalState;
 	ReportNode::LocalItemMap localState;
 
-	ReportNode::Ptr lastroot = root;
+	ReportNode::Ptr lastroot = m_root;
 
 	for (std::size_t i = 0; i < buffer.size();) {
 		// load the item
 		ReportItem item(&(buffer.data()[i]));
-		i += item.pimpl->bytelen;
+		i += item.pimpl->m_bytelen;
 
 		switch (item.getType()) {
 			case ReportItem::Type::MAIN: {
 				switch (static_cast<ReportItem::TagsMain>(item.getTag())) {
 					case ReportItem::TagsMain::COLLECTION: {
 						ReportNode::Ptr newnode(new ReportNode(lastroot, item, globalState, localState));
-						lastroot->pimpl->children.push_back(newnode);
+						lastroot->pimpl->m_children.push_back(newnode);
 						lastroot = newnode;
 						break;
 					}
 					case ReportItem::TagsMain::END_COLLECTION: {
 						ReportNode::Ptr newnode(new ReportNode(lastroot, item, globalState, localState));
-						lastroot->pimpl->children.push_back(newnode);
-						lastroot = lastroot->pimpl->parent;
+						lastroot->pimpl->m_children.push_back(newnode);
+						lastroot = lastroot->pimpl->m_parent;
 						break;
 					}
 					default: {
 						ReportNode::Ptr newnode(new ReportNode(lastroot, item, globalState, localState));
-						lastroot->pimpl->children.push_back(newnode);
+						lastroot->pimpl->m_children.push_back(newnode);
 						break;
 					}
 				}
@@ -326,13 +326,13 @@ ReportTree::ReportTree(const ByteBuffer& buffer) :
 	}
 }
 
-ReportTree::ReportTree(ReportTree &&other) : root(std::move(other.root)) {
+ReportTree::ReportTree(ReportTree&& other) : m_root(std::move(other.m_root)) {
 
 }
 
-ReportTree &ReportTree::operator=(ReportTree &&other) {
+ReportTree& ReportTree::operator=(ReportTree&& other) {
 	if (this != &other) {
-		root = std::move(other.root);
+		m_root = std::move(other.m_root);
 	}
 
 	return *this;
@@ -343,7 +343,7 @@ ReportTree::~ReportTree() {
 }
 
 ReportNode::Ptr ReportTree::getRoot() const {
-	return root;
+	return m_root;
 }
 
 }

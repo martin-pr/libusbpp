@@ -72,21 +72,21 @@ public:
 	 * not a valid device.
 	 */
 	Device();
-	Device(const Device &other);
-	Device(Device &&other) noexcept;
+	Device(const Device& other);
+	Device(Device&& other) noexcept;
 	~Device();
 
-	Device& operator=(const Device &other);
-	Device& operator=(Device &&other) noexcept;
+	Device& operator=(const Device& other);
+	Device& operator=(Device&& other) noexcept;
 
 	/**
 	 * Test whether two devices are the same.
 	 */
-	bool operator==(const Device &other) const;
+	bool operator==(const Device& other) const;
 	/**
 	 * Test whether two devices are the same.
 	 */
-	bool operator!=(const Device &other) const;
+	bool operator!=(const Device& other) const;
 
 	/**
 	 * Check whether the device is valid USB device.
@@ -178,7 +178,7 @@ public:
 	                      uint8_t bRequest,
 	                      uint16_t wValue,
 	                      uint16_t wIndex,
-	                      ByteBuffer &data,
+	                      ByteBuffer& data,
 	                      unsigned int timeout) const;
 	/**
 	 * Bulk transfer from the device to the computer ("receive").
@@ -186,7 +186,7 @@ public:
 	 * @return number of bytes actually transferred.
 	 */
 	int bulkTransferIn(unsigned char endpoint,
-	                   ByteBuffer &data,
+	                   ByteBuffer& data,
 	                   unsigned int timeout) const;
 	/**
 	 * Interrupt transfer from the device to the computer ("receive").
@@ -194,7 +194,7 @@ public:
 	 * @return number of bytes actually transferred.
 	 */
 	int interruptTransferIn(unsigned char endpoint,
-	                        ByteBuffer &data,
+	                        ByteBuffer& data,
 	                        unsigned int timeout) const;
 
 	/**
@@ -206,7 +206,7 @@ public:
 	                       uint8_t bRequest,
 	                       uint16_t wValue,
 	                       uint16_t wIndex,
-	                       const ByteBuffer &data,
+	                       const ByteBuffer& data,
 	                       unsigned int timeout) const;
 	/**
 	 * Bulk transfer from computer to device ("send").
@@ -214,7 +214,7 @@ public:
 	 * @return number of bytes actually transferred.
 	 */
 	int bulkTransferOut(unsigned char endpoint,
-	                    const ByteBuffer &data,
+	                    const ByteBuffer& data,
 	                    unsigned int timeout) const;
 	/**
 	 * Interrupt transfer from computer to device ("send").
@@ -222,11 +222,11 @@ public:
 	 * @return number of bytes actually transferred.
 	 */
 	int interruptTransferOut(unsigned char endpoint,
-	                         const ByteBuffer &data,
+	                         const ByteBuffer& data,
 	                         unsigned int timeout) const;
 
 private:
-	explicit Device(libusb_device *device_);
+	explicit Device(libusb_device* device_);
 	class Impl;
 	std::unique_ptr<Impl> pimpl;
 };

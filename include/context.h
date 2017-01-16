@@ -72,12 +72,12 @@ public:
 	 * Constructs a new context.
 	 */
 	Context();
-	Context(const Context &other);
-	Context(Context &&other) noexcept;
+	Context(const Context& other);
+	Context(Context&& other) noexcept;
 	~Context();
 
-	Context &operator=(const Context &other);
-	Context &operator=(Context &&other) noexcept;
+	Context& operator=(const Context& other);
+	Context& operator=(Context&& other) noexcept;
 
 	/**
 	 * Get list of USB devices.
@@ -94,7 +94,7 @@ public:
 	 * \param func function to call
 	 * \return handle that can be used in unregisterDeviceConnected()
 	 */
-	int registerDeviceConnected(const std::function<void(Device&)> &func);
+	int registerDeviceConnected(const std::function<void(Device&)>& func);
 	/**
 	 * Register a fucntion that is called when a device is removed.
 	 *
@@ -103,7 +103,7 @@ public:
 	 * \param func function to call
 	 * \return handle that can be used in unregisterDeviceDisconnected()
 	 */
-	int registerDeviceDisconnected(const std::function<void(Device&)> &func);
+	int registerDeviceDisconnected(const std::function<void(Device&)>& func);
 
 	/**
 	 * Unregister a device connected callback function.

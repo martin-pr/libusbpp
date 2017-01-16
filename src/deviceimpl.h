@@ -27,20 +27,20 @@ namespace Usbpp {
 class Device::Impl {
 public:
 	Impl();
-	explicit Impl(libusb_device *device_);
+	explicit Impl(libusb_device* device_);
 	Impl(const Impl& other);
 	~Impl();
 
 	void close();
 	void releaseInterface(int bInterfaceNumber);
 
-	libusb_device *device;
-	libusb_device_handle *handle;
-	int *handleRefCount;
+	libusb_device* m_device;
+	libusb_device_handle* m_handle;
+	int* m_handleRefCount;
 	// a set of interfaces claimed by the device
-	std::unordered_set<int> interfaceMyClaimed;
+	std::unordered_set<int> m_interfaceMyClaimed;
 	// a shared map storing the reference counts for all interfaces
-	std::unordered_map<int, int> *interfaceRefCount;
+	std::unordered_map<int, int>* m_interfaceRefCount;
 };
 
 }

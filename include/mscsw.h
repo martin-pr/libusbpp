@@ -38,26 +38,26 @@ public:
 	};
 
 	CommandStatusWrapper();
-	explicit CommandStatusWrapper(const ByteBuffer &buffer);
+	explicit CommandStatusWrapper(const ByteBuffer& buffer);
 	CommandStatusWrapper(uint32_t dCSWTag, uint32_t dCSWDataResidue, uint8_t bCSWStatus);
 	virtual ~CommandStatusWrapper();
 
-	CommandStatusWrapper(const CommandStatusWrapper &other);
+	CommandStatusWrapper(const CommandStatusWrapper& other);
 	CommandStatusWrapper(CommandStatusWrapper&& other) noexcept;
-	CommandStatusWrapper &operator=(const CommandStatusWrapper &other);
-	CommandStatusWrapper &operator=(CommandStatusWrapper&& other) noexcept;
+	CommandStatusWrapper& operator=(const CommandStatusWrapper& other);
+	CommandStatusWrapper& operator=(CommandStatusWrapper&& other) noexcept;
 
 	uint32_t getTag() const;
 	uint32_t getDataResidue() const;
 	Status getStatus() const;
 
-	const ByteBuffer &getBuffer() const;
+	const ByteBuffer& getBuffer() const;
 
 private:
-	ByteBuffer mdata;
+	ByteBuffer m_data;
 };
 
-std::ostream &operator<<(std::ostream &os, const CommandStatusWrapper::Status &status);
+std::ostream& operator<<(std::ostream& os, const CommandStatusWrapper::Status& status);
 
 }
 }

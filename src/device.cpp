@@ -37,7 +37,7 @@ DeviceOpenException::~DeviceOpenException() {
 }
 
 const char* DeviceOpenException::what() const noexcept {
-	return "Cannot open the device";
+	return "Cannot open the device!";
 }
 
 DeviceTransferException::DeviceTransferException(int error) noexcept : Exception(error) {
@@ -49,37 +49,37 @@ DeviceTransferException::~DeviceTransferException() {
 }
 
 const char* DeviceTransferException::what() const noexcept {
-	return "Transfer failed";
+	return "Transfer failed!";
 }
 
 Device::Impl::Impl() :
-	device(nullptr),
-	handle(nullptr),
-	handleRefCount(nullptr),
-	interfaceRefCount(nullptr) {
+	m_device(nullptr),
+	m_handle(nullptr),
+	m_handleRefCount(nullptr),
+	m_interfaceRefCount(nullptr) {
 
 }
 
 Device::Impl::Impl(libusb_device* device_) :
-	device(device_),
-	handle(nullptr),
-	handleRefCount(nullptr),
-	interfaceRefCount(nullptr) {
+	m_device(device_),
+	m_handle(nullptr),
+	m_handleRefCount(nullptr),
+	m_interfaceRefCount(nullptr) {
 
 }
 
 Device::Impl::Impl(const Impl& other) :
-	device(other.device),
-	handle(other.handle),
-	handleRefCount(other.handleRefCount),
-	interfaceMyClaimed(other.interfaceMyClaimed),
-	interfaceRefCount(other.interfaceRefCount) {
+	m_device(other.m_device),
+	m_handle(other.m_handle),
+	m_handleRefCount(other.m_handleRefCount),
+	m_interfaceMyClaimed(other.m_interfaceMyClaimed),
+	m_interfaceRefCount(other.m_interfaceRefCount) {
 
-	if (device) {
-		libusb_ref_device(device);
+	if (m_device) {
+		libusb_ref_device(m_device);
 	}
-	if (handleRefCount) {
-		++(*handleRefCount);
+	if (m_handleRefCount) {
+		++(*m_handleRefCount);
 	}
 }
 
@@ -87,42 +87,42 @@ Device::Impl::~Impl() {
 	// close handle (decreases the handle and interface refcounts, too)
 	close();
 	// decrease the device refcount
-	if (device) {
-		libusb_unref_device(device);
-		device = nullptr;
+	if (m_device) {
+		libusb_unref_device(m_device);
+		m_device = nullptr;
 	}
 }
 
 void Device::Impl::close() {
 	// release interfaces claimed by this object
-	while (interfaceMyClaimed.begin() != interfaceMyClaimed.end()) {
-		releaseInterface(*interfaceMyClaimed.begin());
+	while (m_interfaceMyClaimed.begin() != m_interfaceMyClaimed.end()) {
+		releaseInterface(*m_interfaceMyClaimed.begin());
 	}
 	// close the device
-	if (handleRefCount) {
-		--(*handleRefCount);
-		if (*handleRefCount == 0) {
-			libusb_close(handle);
-			handle = nullptr;
-			delete handleRefCount;
-			handleRefCount = nullptr;
+	if (m_handleRefCount) {
+		--(*m_handleRefCount);
+		if (*m_handleRefCount == 0) {
+			libusb_close(m_handle);
+			m_handle = nullptr;
+			delete m_handleRefCount;
+			m_handleRefCount = nullptr;
 		}
 	}
 }
 
 void Device::Impl::releaseInterface(int bInterfaceNumber) {
-	std::unordered_set<int>::iterator it(interfaceMyClaimed.find(bInterfaceNumber));
-	if (it != interfaceMyClaimed.end()) {
-		interfaceMyClaimed.erase(it);
-		std::unordered_map<int, int>::iterator refcnt(interfaceRefCount->find(bInterfaceNumber));
+	std::unordered_set<int>::iterator it(m_interfaceMyClaimed.find(bInterfaceNumber));
+	if (it != m_interfaceMyClaimed.end()) {
+		m_interfaceMyClaimed.erase(it);
+		std::unordered_map<int, int>::iterator refcnt(m_interfaceRefCount->find(bInterfaceNumber));
 		--(refcnt->second);
 		if (refcnt->second == 0) {
-			libusb_release_interface(handle, bInterfaceNumber);
-			interfaceRefCount->erase(refcnt);
+			libusb_release_interface(m_handle, bInterfaceNumber);
+			m_interfaceRefCount->erase(refcnt);
 		}
-		if (interfaceRefCount->empty()) {
-			delete interfaceRefCount;
-			interfaceRefCount = nullptr;
+		if (m_interfaceRefCount->empty()) {
+			delete m_interfaceRefCount;
+			m_interfaceRefCount = nullptr;
 		}
 	}
 }
@@ -131,11 +131,11 @@ Device::Device() : pimpl(new Impl) {
 
 }
 
-Device::Device(const Device &other) : pimpl(new Impl(*other.pimpl)) {
+Device::Device(const Device& other) : pimpl(new Impl(*other.pimpl)) {
 
 }
 
-Device::Device(Device &&other) noexcept : pimpl(std::move(other.pimpl)) {
+Device::Device(Device&& other) noexcept : pimpl(std::move(other.pimpl)) {
 
 }
 
@@ -147,16 +147,16 @@ Device::~Device() {
 
 }
 
-bool Device::operator==(const Device &other) const {
-	return pimpl->device == other.pimpl->device;
+bool Device::operator==(const Device& other) const {
+	return pimpl->m_device == other.pimpl->m_device;
 }
 
-bool Device::operator!=(const Device &other) const {
-	return pimpl->device != other.pimpl->device;
+bool Device::operator!=(const Device& other) const {
+	return pimpl->m_device != other.pimpl->m_device;
 }
 
 bool Device::isValid() const {
-	return pimpl->device != nullptr;
+	return pimpl->m_device != nullptr;
 }
 
 Device& Device::operator=(const Device& other) {
@@ -168,7 +168,7 @@ Device& Device::operator=(const Device& other) {
 	return *this;
 }
 
-Device& Device::operator=(Device && other) noexcept {
+Device& Device::operator=(Device&& other) noexcept {
 	if (this != &other) {
 		pimpl = std::move(other.pimpl);
 	}
@@ -177,15 +177,15 @@ Device& Device::operator=(Device && other) noexcept {
 }
 
 void Device::open(bool detachDriver) {
-	if (! pimpl->handleRefCount) {
-		int res(libusb_open(pimpl->device, &pimpl->handle));
+	if (! pimpl->m_handleRefCount) {
+		int res(libusb_open(pimpl->m_device, &pimpl->m_handle));
 		if (res != 0) {
 			throw DeviceOpenException(res);
 		}
-		pimpl->handleRefCount = new int;
-		*pimpl->handleRefCount = 1;
+		pimpl->m_handleRefCount = new int;
+		*pimpl->m_handleRefCount = 1;
 	}
-	libusb_set_auto_detach_kernel_driver(pimpl->handle, detachDriver);
+	libusb_set_auto_detach_kernel_driver(pimpl->m_handle, detachDriver);
 }
 
 void Device::close() {
@@ -193,28 +193,28 @@ void Device::close() {
 }
 
 bool Device::reset() {
-	assert(pimpl->handle != 0);
-	assert(pimpl->interfaceMyClaimed.empty());
-	assert(pimpl->interfaceRefCount == 0 || pimpl->interfaceRefCount->empty());
-	if (libusb_reset_device(pimpl->handle) == LIBUSB_ERROR_NOT_FOUND) {
+	assert(pimpl->m_handle != 0);
+	assert(pimpl->m_interfaceMyClaimed.empty());
+	assert(pimpl->m_interfaceRefCount == 0 || pimpl->m_interfaceRefCount->empty());
+	if (libusb_reset_device(pimpl->m_handle) == LIBUSB_ERROR_NOT_FOUND) {
 		return false;
 	}
 	return true;
 }
 
 void Device::clearHalt(unsigned char endpoint) {
-	libusb_clear_halt(pimpl->handle, endpoint);
+	libusb_clear_halt(pimpl->m_handle, endpoint);
 }
 
 libusb_device_descriptor Device::getDescriptor() {
 	libusb_device_descriptor desc;
-	libusb_get_device_descriptor(pimpl->device, &desc);
+	libusb_get_device_descriptor(pimpl->m_device, &desc);
 	return desc;
 }
 
 int Device::getConfiguration() {
 	int config;
-	int res = libusb_get_configuration(pimpl->handle, &config);
+	int res = libusb_get_configuration(pimpl->m_handle, &config);
 	if (res < 0) {
 		throw DeviceTransferException(res);
 	}
@@ -222,25 +222,25 @@ int Device::getConfiguration() {
 }
 
 void Device::setConfiguration(int bConfigurationValue) {
-	int res = libusb_set_configuration(pimpl->handle, bConfigurationValue);
+	int res = libusb_set_configuration(pimpl->m_handle, bConfigurationValue);
 	if (res < 0) {
 		throw DeviceTransferException(res);
 	}
 }
 
 void Device::claimInterface(int bInterfaceNumber) {
-	pimpl->interfaceMyClaimed.emplace(bInterfaceNumber);
-	if (! pimpl->interfaceRefCount) {
-		pimpl->interfaceRefCount = new std::unordered_map<int, int>();
+	pimpl->m_interfaceMyClaimed.emplace(bInterfaceNumber);
+	if (! pimpl->m_interfaceRefCount) {
+		pimpl->m_interfaceRefCount = new std::unordered_map<int, int>();
 	}
-	std::unordered_map<int, int>::iterator refcnt(pimpl->interfaceRefCount->find(bInterfaceNumber));
-	if (refcnt == pimpl->interfaceRefCount->end()) {
-		pimpl->interfaceRefCount->insert(std::make_pair(bInterfaceNumber, 1));
+	std::unordered_map<int, int>::iterator refcnt(pimpl->m_interfaceRefCount->find(bInterfaceNumber));
+	if (refcnt == pimpl->m_interfaceRefCount->end()) {
+		pimpl->m_interfaceRefCount->insert(std::make_pair(bInterfaceNumber, 1));
 	}
 	else {
 		++(refcnt->second);
 	}
-	libusb_claim_interface(pimpl->handle, bInterfaceNumber);
+	libusb_claim_interface(pimpl->m_handle, bInterfaceNumber);
 }
 
 void Device::releaseInterface(int bInterfaceNumber) {
@@ -251,10 +251,10 @@ int Device::controlTransferIn(uint8_t bmRequestType,
                               uint8_t bRequest,
                               uint16_t wValue,
                               uint16_t wIndex,
-                              ByteBuffer &data,
+                              ByteBuffer& data,
                               unsigned int timeout) const {
 	assert(bmRequestType & LIBUSB_ENDPOINT_IN);
-	int res = libusb_control_transfer(pimpl->handle, bmRequestType, bRequest, wValue, wIndex, data.data(), data.size(), timeout);
+	int res = libusb_control_transfer(pimpl->m_handle, bmRequestType, bRequest, wValue, wIndex, data.data(), data.size(), timeout);
 	if (res < 0) {
 		throw DeviceTransferException(res);
 	}
@@ -262,11 +262,11 @@ int Device::controlTransferIn(uint8_t bmRequestType,
 }
 
 int Device::bulkTransferIn(unsigned char endpoint,
-                           ByteBuffer &data,
+                           ByteBuffer& data,
                            unsigned int timeout) const {
 	assert(endpoint & LIBUSB_ENDPOINT_IN);
 	int transferred(0);
-	int res = libusb_bulk_transfer(pimpl->handle, endpoint, data.data(), data.size(), &transferred, timeout);
+	int res = libusb_bulk_transfer(pimpl->m_handle, endpoint, data.data(), data.size(), &transferred, timeout);
 	if (res != 0) {
 		throw DeviceTransferException(res);
 	}
@@ -274,11 +274,11 @@ int Device::bulkTransferIn(unsigned char endpoint,
 }
 
 int Device::interruptTransferIn(unsigned char endpoint,
-                                ByteBuffer &data,
+                                ByteBuffer& data,
                                 unsigned int timeout) const {
 	assert(endpoint & LIBUSB_ENDPOINT_IN);
 	int transferred(0);
-	int res = libusb_interrupt_transfer(pimpl->handle, endpoint, data.data(), data.size(), &transferred, timeout);
+	int res = libusb_interrupt_transfer(pimpl->m_handle, endpoint, data.data(), data.size(), &transferred, timeout);
 	if (res != 0) {
 		throw DeviceTransferException(res);
 	}
@@ -289,10 +289,10 @@ int Device::controlTransferOut(uint8_t bmRequestType,
                                uint8_t bRequest,
                                uint16_t wValue,
                                uint16_t wIndex,
-                               const ByteBuffer &data,
+                               const ByteBuffer& data,
                                unsigned int timeout) const {
 	assert((bmRequestType & LIBUSB_ENDPOINT_IN) == 0);
-	int res = libusb_control_transfer(pimpl->handle, bmRequestType, bRequest, wValue, wIndex,
+	int res = libusb_control_transfer(pimpl->m_handle, bmRequestType, bRequest, wValue, wIndex,
 	                                  const_cast<unsigned char*>(data.data()), data.size(), timeout);
 	if (res < 0) {
 		throw DeviceTransferException(res);
@@ -301,11 +301,11 @@ int Device::controlTransferOut(uint8_t bmRequestType,
 }
 
 int Device::bulkTransferOut(unsigned char endpoint,
-                            const ByteBuffer &data,
+                            const ByteBuffer& data,
                             unsigned int timeout) const {
 	assert((endpoint & LIBUSB_ENDPOINT_IN) == 0);
 	int transferred(0);
-	int res = libusb_bulk_transfer(pimpl->handle, endpoint,
+	int res = libusb_bulk_transfer(pimpl->m_handle, endpoint,
 	                               const_cast<unsigned char*>(data.data()), data.size(), &transferred, timeout);
 	if (res != 0) {
 		throw DeviceTransferException(res);
@@ -314,11 +314,11 @@ int Device::bulkTransferOut(unsigned char endpoint,
 }
 
 int Device::interruptTransferOut(unsigned char endpoint,
-                                 const ByteBuffer &data,
+                                 const ByteBuffer& data,
                                  unsigned int timeout) const {
 	assert((endpoint & LIBUSB_ENDPOINT_IN) == 0);
 	int transferred(0);
-	int res = libusb_interrupt_transfer(pimpl->handle, endpoint,
+	int res = libusb_interrupt_transfer(pimpl->m_handle, endpoint,
 	                                    const_cast<unsigned char*>(data.data()), data.size(), &transferred, timeout);
 	if (res != 0) {
 		throw DeviceTransferException(res);

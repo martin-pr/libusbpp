@@ -30,7 +30,7 @@ namespace std {
 template <>
 struct hash<::Usbpp::Device> {
 public:
-	size_t operator()(const ::Usbpp::Device &device) const;
+	size_t operator()(const ::Usbpp::Device& device) const;
 };
 }
 

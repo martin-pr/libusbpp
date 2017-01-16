@@ -29,54 +29,55 @@ constexpr std::size_t CSW_LEN = 13;
 namespace Usbpp {
 namespace MassStorage {
 
-CommandStatusWrapper::CommandStatusWrapper() : mdata(CSW_LEN) {
-	std::memset(&mdata[0], 0, CSW_LEN);
+CommandStatusWrapper::CommandStatusWrapper() : m_data(CSW_LEN) {
+	std::memset(&m_data[0], 0, CSW_LEN);
 }
 
-CommandStatusWrapper::CommandStatusWrapper(const ByteBuffer &buffer) {
+CommandStatusWrapper::CommandStatusWrapper(const ByteBuffer& buffer) {
 	assert(buffer.size() == CSW_LEN);
 
-	mdata = buffer;
+	m_data = buffer;
 }
 
-CommandStatusWrapper::CommandStatusWrapper(uint32_t dCSWTag, uint32_t dCSWDataResidue, uint8_t bCSWStatus) : mdata(CSW_LEN) {
-	std::memset(&mdata[0], 0, CSW_LEN);
+CommandStatusWrapper::CommandStatusWrapper(uint32_t dCSWTag, uint32_t dCSWDataResidue, uint8_t bCSWStatus) : m_data(CSW_LEN) {
+	std::memset(&m_data[0], 0, CSW_LEN);
 
 	// dCSWSignature
-	mdata[0] = 'U';
-	mdata[1] = 'S';
-	mdata[2] = 'B';
-	mdata[3] = 'S';
+	m_data[0] = 'U';
+	m_data[1] = 'S';
+	m_data[2] = 'B';
+	m_data[3] = 'S';
 	// dCSWTag
-	mdata[4] = (dCSWTag >> 24) & 0xFF;
-	mdata[5] = (dCSWTag >> 16) & 0xFF;
-	mdata[6] = (dCSWTag >> 8) & 0xFF;
-	mdata[7] = dCSWTag & 0xFF;
+	m_data[4] = (dCSWTag >> 24) & 0xFF;
+	m_data[5] = (dCSWTag >> 16) & 0xFF;
+	m_data[6] = (dCSWTag >> 8) & 0xFF;
+	m_data[7] = dCSWTag & 0xFF;
 	// dCSWDataResidue
-	mdata[8] = (dCSWDataResidue >> 24) & 0xFF;
-	mdata[9] = (dCSWDataResidue >> 16) & 0xFF;
-	mdata[10] = (dCSWDataResidue >> 8) & 0xFF;
-	mdata[11] = dCSWDataResidue & 0xFF;
+	m_data[8] = (dCSWDataResidue >> 24) & 0xFF;
+	m_data[9] = (dCSWDataResidue >> 16) & 0xFF;
+	m_data[10] = (dCSWDataResidue >> 8) & 0xFF;
+	m_data[11] = dCSWDataResidue & 0xFF;
 	// bCSWStatus
 	assert(bCSWStatus != 0x03 && bCSWStatus != 0x04); // obsolete
 	assert(bCSWStatus < 0x05); // reserved
-	mdata[12] = bCSWStatus;
+	m_data[12] = bCSWStatus;
 }
 
 CommandStatusWrapper::~CommandStatusWrapper() {
 }
 
-CommandStatusWrapper::CommandStatusWrapper(const CommandStatusWrapper& other) : mdata(other.mdata) {
+CommandStatusWrapper::CommandStatusWrapper(const CommandStatusWrapper& other) : m_data(other.m_data) {
 
 }
 
-CommandStatusWrapper::CommandStatusWrapper(CommandStatusWrapper&& other) noexcept : mdata(std::move(other.mdata)) {
+CommandStatusWrapper::CommandStatusWrapper(CommandStatusWrapper&& other) noexcept
+	: m_data(std::move(other.m_data)) {
 
 }
 
 CommandStatusWrapper& CommandStatusWrapper::operator=(const CommandStatusWrapper& other) {
 	if (this != &other) {
-		mdata = other.mdata;
+		m_data = other.m_data;
 	}
 
 	return *this;
@@ -84,7 +85,7 @@ CommandStatusWrapper& CommandStatusWrapper::operator=(const CommandStatusWrapper
 
 CommandStatusWrapper& CommandStatusWrapper::operator=(CommandStatusWrapper&& other) noexcept {
 	if (this != &other) {
-		mdata = std::move(other.mdata);
+		m_data = std::move(other.m_data);
 	}
 
 	return *this;
@@ -92,37 +93,37 @@ CommandStatusWrapper& CommandStatusWrapper::operator=(CommandStatusWrapper&& oth
 
 uint32_t CommandStatusWrapper::getTag() const {
 	uint32_t tag;
-	tag = mdata[4];
-	tag = (tag << 8) | mdata[5];
-	tag = (tag << 8) | mdata[6];
-	tag = (tag << 8) | mdata[7];
+	tag = m_data[4];
+	tag = (tag << 8) | m_data[5];
+	tag = (tag << 8) | m_data[6];
+	tag = (tag << 8) | m_data[7];
 	return tag;
 }
 
 uint32_t CommandStatusWrapper::getDataResidue() const {
 	uint32_t residue;
-	residue = mdata[8];
-	residue = (residue << 8) | mdata[9];
-	residue = (residue << 8) | mdata[10];
-	residue = (residue << 8) | mdata[11];
+	residue = m_data[8];
+	residue = (residue << 8) | m_data[9];
+	residue = (residue << 8) | m_data[10];
+	residue = (residue << 8) | m_data[11];
 	return residue;
 }
 
 CommandStatusWrapper::Status CommandStatusWrapper::getStatus() const {
-	if (mdata[12] > 0x05) {
+	if (m_data[12] > 0x05) {
 		return Status::RESERVED;
 	}
-	if (mdata[12] >= 0x03) {
+	if (m_data[12] >= 0x03) {
 		return Status::OBSOLETE;
 	}
-	return static_cast<Status>(mdata[12]);
+	return static_cast<Status>(m_data[12]);
 }
 
-const ByteBuffer &CommandStatusWrapper::getBuffer() const {
-	return mdata;
+const ByteBuffer& CommandStatusWrapper::getBuffer() const {
+	return m_data;
 }
 
-std::ostream& operator<<(std::ostream& os, const CommandStatusWrapper::Status &status) {
+std::ostream& operator<<(std::ostream& os, const CommandStatusWrapper::Status& status) {
 	switch (status) {
 		case Usbpp::MassStorage::CommandStatusWrapper::Status::PASSED:
 			return os << "PASSED (0x00)";

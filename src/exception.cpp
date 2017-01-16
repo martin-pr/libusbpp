@@ -17,9 +17,12 @@
 
 #include "exception.h"
 
+#include <libusb.h>
+
 namespace Usbpp {
 
-Exception::Exception(int error_) noexcept : error(error_) {
+Exception::Exception(int error) noexcept
+	: m_error(error) {
 
 }
 
@@ -28,7 +31,11 @@ Exception::~Exception() {
 }
 
 int Exception::getError() const {
-	return error;
+	return m_error;
+}
+
+std::string Exception::getDescription() const {
+	return std::string(what()) + " Caused by libusb error: " + libusb_strerror(static_cast<libusb_error>(m_error));
 }
 
 }

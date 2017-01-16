@@ -17,6 +17,8 @@
 #ifndef LIBUSBPP_EXCEPTION_H_
 #define LIBUSBPP_EXCEPTION_H_
 
+#include <string>
+
 namespace Usbpp {
 
 /**
@@ -24,16 +26,40 @@ namespace Usbpp {
  */
 class Exception {
 public:
+	/**
+	 * Construct an exception caused by a libusb error.
+	 *
+	 * \param error Libusb error (see libusb_error enum in libusb).
+	 */
 	explicit Exception(int error) noexcept;
+	/**
+	 * A destructor.
+	 */
 	virtual ~Exception();
 
+	/**
+	 * Return the libusb error that caused the exception.
+	 *
+	 * \return The numeric value of the error.
+	 */
 	int getError() const;
 
+	/**
+	 * Return brief description of the exception.
+	 */
 	virtual const char* what() const noexcept = 0;
-private:
-	const int error;
-};
 
+	/**
+	 * Return textual representation of the exception for showing to user.
+	 *
+	 * The default implementation returns string consisting of the description
+	 * returned by \a what() and the string representation of the libusb error.
+	 */
+	virtual std::string getDescription() const;
+
+private:
+	const int m_error;
+};
 
 }
 

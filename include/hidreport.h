@@ -82,12 +82,12 @@ public:
 	};
 
 	ReportItem();
-	ReportItem(const ReportItem &other);
-	ReportItem(ReportItem &&other);
+	ReportItem(const ReportItem& other);
+	ReportItem(ReportItem&& other);
 	~ReportItem();
 
-	ReportItem &operator=(const ReportItem &other);
-	ReportItem &operator=(ReportItem &&other) noexcept;
+	ReportItem& operator=(const ReportItem& other);
+	ReportItem& operator=(ReportItem&& other) noexcept;
 
 	/**
 	 * short/long
@@ -108,7 +108,7 @@ public:
 	/**
 	 * the additional payload.
 	 */
-	const ByteBuffer &getData() const;
+	const ByteBuffer& getData() const;
 private:
 	friend class ReportTree;
 
@@ -136,31 +136,31 @@ public:
 	typedef std::vector<Ptr> List;
 
 	ReportNode();
-	ReportNode(const ReportNode &other);
-	ReportNode(ReportNode &&other) noexcept;
+	ReportNode(const ReportNode& other);
+	ReportNode(ReportNode&& other) noexcept;
 	~ReportNode();
 
-	ReportNode &operator=(const ReportNode &other);
-	ReportNode &operator=(ReportNode &&other) noexcept;
+	ReportNode& operator=(const ReportNode& other);
+	ReportNode& operator=(ReportNode&& other) noexcept;
 
 	/**
 	 * Get the state configured using the global items.
 	 *
 	 * @return map of global items valid for the current main item.
 	 */
-	const GlobalItemMap &getGlobalState() const;
+	const GlobalItemMap& getGlobalState() const;
 	/**
 	 * Get the state configured using the local items.
 	 *
 	 * @return map of local items valid for the current main item.
 	 */
-	const LocalItemMap &getLocalState() const;
+	const LocalItemMap& getLocalState() const;
 	/**
 	 * Get the main item associated with the node.
 	 *
 	 * @return main item
 	 */
-	const ReportItem &getItem() const;
+	const ReportItem& getItem() const;
 	/**
 	 * Get the parent node.
 	 *
@@ -169,7 +169,7 @@ public:
 	 *
 	 * @return parent node or empty pointer
 	 */
-	const Ptr &getParent() const;
+	const Ptr& getParent() const;
 	/**
 	 * Get list of children nodes
 	 *
@@ -178,14 +178,14 @@ public:
 	 *
 	 * @return list of child nodes
 	 */
-	const List &getChildren() const;
+	const List& getChildren() const;
 
 private:
 	friend class ReportTree;
-	ReportNode(const Ptr &parent_,
-	           const ReportItem &item_,
-	           const GlobalItemMap &globalState_,
-	           const LocalItemMap &localState_);
+	ReportNode(const Ptr& parent_,
+	           const ReportItem& item_,
+	           const GlobalItemMap& globalState_,
+	           const LocalItemMap& localState_);
 
 	class Impl;
 	std::unique_ptr<Impl> pimpl;
@@ -204,9 +204,9 @@ public:
 	 *
 	 * Constructs the report tree from the binary representation of the descriptor.
 	 */
-	explicit ReportTree(const ByteBuffer &buffer);
-	ReportTree(ReportTree &&other);
-	ReportTree &operator=(ReportTree &&other);
+	explicit ReportTree(const ByteBuffer& buffer);
+	ReportTree(ReportTree&& other);
+	ReportTree& operator=(ReportTree&& other);
 	~ReportTree();
 
 	/**
@@ -215,11 +215,11 @@ public:
 	ReportNode::Ptr getRoot() const;
 
 	// avoid copy
-	ReportTree(const ReportTree &other) = delete;
-	ReportTree &operator=(const ReportTree &other) = delete;
+	ReportTree(const ReportTree& other) = delete;
+	ReportTree& operator=(const ReportTree& other) = delete;
 
 private:
-	ReportNode::Ptr root;
+	ReportNode::Ptr m_root;
 };
 
 }

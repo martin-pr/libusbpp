@@ -29,8 +29,8 @@ public:
 	explicit InquiryResponse(const ByteBuffer& buffer);
 	InquiryResponse(const InquiryResponse& other);
 	InquiryResponse(InquiryResponse&& other) noexcept;
-	InquiryResponse& operator=(InquiryResponse &other) = default;
-	InquiryResponse& operator=(InquiryResponse &&other) noexcept = default;
+	InquiryResponse& operator=(InquiryResponse& other) = default;
+	InquiryResponse& operator=(InquiryResponse&& other) noexcept = default;
 
 	uint8_t getPeripheralQualifier() const;
 	uint8_t getPeripheralDeviceType() const;
@@ -83,7 +83,7 @@ public:
 	ByteBuffer getVendorSpecific() const;
 
 private:
-	ByteBuffer mbuffer;
+	ByteBuffer m_buffer;
 };
 
 }

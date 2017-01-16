@@ -22,8 +22,8 @@
 
 namespace std {
 
-size_t hash<::Usbpp::Device>::operator()(const ::Usbpp::Device &device) const {
-	return std::hash<libusb_device*>()(device.pimpl->device);
+size_t hash<::Usbpp::Device>::operator()(const ::Usbpp::Device& device) const {
+	return std::hash<libusb_device*>()(device.pimpl->m_device);
 }
 
 }

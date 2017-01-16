@@ -32,7 +32,7 @@ namespace {
 using namespace Usbpp;
 using namespace Usbpp::MassStorage;
 
-SCSI::InquiryResponse sendInquiry(const Device *device, unsigned char endpoint, uint8_t LUN, bool explicitpage, uint8_t page = 0) try {
+SCSI::InquiryResponse sendInquiry(const Device* device, unsigned char endpoint, uint8_t LUN, bool explicitpage, uint8_t page = 0) try {
 	unsigned char inEndpoint(endpoint | LIBUSB_ENDPOINT_IN);
 	ByteBuffer tmpBuf(36);
 	ByteBuffer statusBuf(13);
@@ -84,14 +84,14 @@ SCSI::InquiryResponse sendInquiry(const Device *device, unsigned char endpoint, 
 			return response;
 		}
 	}
-	catch (const DeviceTransferException &e) {
+	catch (const DeviceTransferException& e) {
 		// we can return the previous inquiry response
 		return response;
 	}
 
 	return SCSI::InquiryResponse(ByteBuffer(tmpBuf.data(), transferred));;
 }
-catch (const DeviceTransferException &e) {
+catch (const DeviceTransferException& e) {
 	throw InquiryException(e.getError());
 }
 
@@ -109,7 +109,7 @@ InquiryException::~InquiryException() {
 }
 
 const char* InquiryException::what() const noexcept {
-	return "Failed to read SCSI inquiry response";
+	return "Failed to read SCSI inquiry response!";
 }
 
 SCSICommandStatusException::SCSICommandStatusException() noexcept : Exception(0) {
@@ -121,7 +121,7 @@ SCSICommandStatusException::~SCSICommandStatusException() {
 }
 
 const char* SCSICommandStatusException::what() const noexcept {
-	return "Failed to read command status";
+	return "Failed to read command status!";
 }
 
 MSDevice::MSDevice() {
@@ -140,7 +140,7 @@ MSDevice::MSDevice(MSDevice&& device) noexcept: Device(std::move(device)) {
 
 }
 
-CommandStatusWrapper MSDevice::sendCommand(unsigned char endpoint, const CommandBlockWrapper& command, ByteBuffer *data) {
+CommandStatusWrapper MSDevice::sendCommand(unsigned char endpoint, const CommandBlockWrapper& command, ByteBuffer* data) {
 	// an "in" endpoint derived from the endpoint
 	unsigned char inEndpoint(endpoint | LIBUSB_ENDPOINT_IN);
 
