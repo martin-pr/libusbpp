@@ -64,7 +64,14 @@ public:
 /**
  * A context.
  *
- * Handles a libusb context for an individual session.
+ * Handles a libusb context for an individual session. The context provides
+ * enumeration functionality for usb devices.
+ *
+ * The context also provides asynchronous callbacks to handle addition/removal
+ * of USB interfaces. The callbacks are handled by an event loop. The event loop
+ * is started automatically when a callback function is registered. The event loop
+ * runs in a separate thread which exists as long as there are any callback
+ * functions registered.
  */
 class Context {
 public:
@@ -72,15 +79,30 @@ public:
 	 * Constructs a new context.
 	 */
 	Context();
+	/**
+	 * Copy constructor
+	 */
 	Context(const Context& other);
+	/**
+	 * Move constructor.
+	 */
 	Context(Context&& other) noexcept;
+	/**
+	 * A destructor.
+	 */
 	~Context();
 
+	/**
+	 * Assignment operator.
+	 */
 	Context& operator=(const Context& other);
+	/**
+	 * Move assignment operator
+	 */
 	Context& operator=(Context&& other) noexcept;
 
 	/**
-	 * Get list of USB devices.
+	 * Get list of currently attached USB devices.
 	 *
 	 * \return list of USB devices
 	 */

@@ -28,26 +28,100 @@ namespace Usbpp {
  */
 class ByteBuffer {
 public:
+	/**
+	 * Default constructor.
+	 *
+	 * Constructs a buffer with no storage and zero size.
+	 */
 	ByteBuffer();
-	explicit ByteBuffer(std::size_t msize_);
-	ByteBuffer(const std::uint8_t* data_, std::size_t msize_);
+	/**
+	 * Construct a buffer with a specified size.
+	 *
+	 * The data are not initialized.
+	 *
+	 * \param size Size of the buffer.
+	 */
+	explicit ByteBuffer(std::size_t size);
+	/**
+	 * Constructs a buffer from existing byte buffer.
+	 *
+	 * The data are copied from the array pointed by \a data to a new buffer.
+	 *
+	 * \param data Buffer containing data.
+	 * \param size Size of the data buffer in bytes.
+	 */
+	ByteBuffer(const std::uint8_t* data, std::size_t size);
+	/**
+	 * Copy constructor.
+	 */
 	ByteBuffer(const ByteBuffer& other);
+	/**
+	 * Move constructor.
+	 */
 	ByteBuffer(ByteBuffer&& other) noexcept;
+	/**
+	 * A destructor.
+	 */
 	~ByteBuffer();
 
+	/**
+	 * Assignment operator.
+	 */
 	ByteBuffer& operator=(const ByteBuffer& other);
+	/**
+	 * Move assignment operator.
+	 */
 	ByteBuffer& operator=(ByteBuffer&& other) noexcept;
 
+	/**
+	 * Byte access operator.
+	 *
+	 * Accesses byte at a specified position.
+	 *
+	 * \param i Byte to access.
+	 * \return Reference to \a i-th byte.
+	 */
 	std::uint8_t& operator[](std::size_t i);
+	/**
+	 * \copydoc std::uint8_t& operator[](std::size_t i)
+	 *
+	 * Const overload.
+	 */
 	const std::uint8_t& operator[](std::size_t i) const;
 
+	/**
+	 * Append another buffer.
+	 *
+	 * The data of \a other buffer are appended at the end of the current buffer
+	 * and the current buffer is resized accordingly.
+	 *
+	 * \param other Buffer to append.
+	 * \return The resulting buffer.
+	 */
 	ByteBuffer& append(const ByteBuffer& other);
 
+	/**
+	 * Resize the buffer.
+	 *
+	 * \param size New buffer size.
+	 */
 	void resize(std::size_t size);
 
+	/**
+	 * Get the current buffer size.
+	 */
 	std::size_t size() const ;
 
+	/**
+	 * Get pointer to data held by the buffer.
+	 */
 	std::uint8_t* data();
+
+	/**
+	 * \copydoc std::uint8_t* data()
+	 *
+	 * Const overload.
+	 */
 	const std::uint8_t* data() const;
 
 private:
