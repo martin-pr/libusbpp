@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libusbpp
+Description: A simple C++ wrapper around libusb providing some additional convenience functions.
+Version: 1.0
+
+Libs: -L${libdir} -lusbpp
+Cflags: -I${includedir}
