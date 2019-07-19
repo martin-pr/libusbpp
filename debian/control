@@ -1,0 +1,14 @@
+Source: libusbpp
+Section: libs
+Priority: optional
+Maintainer: Martin Prazak <martin.prazak@gmail.com>
+Build-Depends: debhelper (>= 9), cmake, pkg-config, libusb-1.0-0-dev
+Standards-Version: 4.1.2
+Homepage: https://github.com/martin-pr/libusbpp
+Vcs-Git: https://github.com/martin-pr/libusbpp
+Vcs-Browser: https://github.com/martin-pr/libusbpp
+
+Package: libusbpp
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: libusbpp is a simple C++ wrapper around libusb providing some additional convenience functions.
