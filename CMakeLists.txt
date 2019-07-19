@@ -19,6 +19,8 @@ set(CMAKE_CXX_FLAGS "-std=c++11")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -Wall -Wstrict-aliasing -Wextra")
 include_directories(${LIBUSB_INCLUDE_DIRS} include)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_subdirectory(examples)
 add_subdirectory(include)
 add_subdirectory(src)

@@ -1,5 +1,5 @@
 
-add_library(usbpp
+add_library(usbpp SHARED
 	buffer.cpp context.cpp device.cpp exception.cpp # basic libusb wrapper
 	stddevicehash.cpp # std library support
 	hiddevice.cpp hidreport.cpp # HID support
