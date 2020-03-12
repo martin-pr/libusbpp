@@ -21,6 +21,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include <libusb.h>
 
 #include "device.h"
 #include "exception.h"
@@ -100,6 +101,9 @@ public:
 	 * Move assignment operator
 	 */
 	Context& operator=(Context&& other) noexcept;
+
+    template <typename ... Ts>
+    void setOption(libusb_option option, Ts ... args);
 
 	/**
 	 * Get list of currently attached USB devices.
