@@ -21,6 +21,7 @@
 #include <exception>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "buffer.h"
 #include "exception.h"
@@ -156,6 +157,21 @@ public:
 	 *         The structure is defined in libusb.h
 	 */
 	libusb_device_descriptor getDescriptor();
+
+	/**
+	 *
+	 * @param desc
+	 * @param key
+	 * @return
+	 */
+	std::string* getStringDescriptor(int key);
+
+	uint8_t getBusNumber() const;
+
+	uint8_t getDeviceAddress() const;
+
+	static const int MAX_PORT_NUMBERS = 255;
+	std::vector<uint8_t> *getPortNumbers();
 
 	/**
 	 * Get the device configuration.

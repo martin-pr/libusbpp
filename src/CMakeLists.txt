@@ -5,6 +5,7 @@ add_library(usbpp SHARED
 	hiddevice.cpp hidreport.cpp # HID support
 	mscbw.cpp mscsw.cpp msdevice.cpp msscsiinquiry.cpp msscsiinquiryresponse.cpp # mass storage
 )
+find_package(libusb-1.0)
 target_link_libraries(usbpp ${LIBUSB_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 install(TARGETS usbpp DESTINATION ${LIBDIR})

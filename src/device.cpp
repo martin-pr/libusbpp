@@ -17,12 +17,14 @@
 
 #include "device.h"
 
+#include <cstring>
 #include <cassert>
 #include <libusb.h>
 #include <unistd.h>
 #include <unordered_map>
 #include <unordered_set>
 #include <sstream>
+#include <vector>
 
 #include "deviceimpl.h"
 
@@ -210,6 +212,56 @@ libusb_device_descriptor Device::getDescriptor() {
 	libusb_device_descriptor desc;
 	libusb_get_device_descriptor(pimpl->m_device, &desc);
 	return desc;
+}
+
+std::string* Device::getStringDescriptor(const int key) {
+    /** Pre-allocated maximum length for getStringDescriptor calls. Calls with maxlen > n will throw */
+    const int STRING_DESCRIPTOR_MAXLEN = 1024;
+    /** Pre-allocated buffer for libusb_get_string_descriptor_ascii, using above constant */
+    unsigned char data[STRING_DESCRIPTOR_MAXLEN];
+    if (pimpl->m_handle == NULL) {
+        return nullptr;
+    }
+    // pre-zero
+    std::memset(data, 0, STRING_DESCRIPTOR_MAXLEN);
+    libusb_get_string_descriptor_ascii(pimpl->m_handle, key, data, STRING_DESCRIPTOR_MAXLEN);
+    uint16_t data_length;
+    for (data_length=0; data_length<STRING_DESCRIPTOR_MAXLEN; data_length++) {
+        if (data[data_length] == 0) break;
+    }
+    // return null when no result, don't bother allocating an empty string
+    if (data_length == 0) {
+        return nullptr;
+    }
+    return new std::string(reinterpret_cast<const char *>(data));
+}
+
+uint8_t Device::getBusNumber() const{
+    if (pimpl->m_device == NULL) {
+        return 0;
+    }
+
+    return libusb_get_bus_number(pimpl->m_device);
+}
+
+uint8_t Device::getDeviceAddress() const {
+    return libusb_get_device_address(pimpl->m_device);
+}
+
+std::vector<uint8_t> *Device::getPortNumbers() {
+    std::vector<uint8_t> *ports_vec = new std::vector<uint8_t>();
+
+    if (pimpl->m_device != NULL) {
+        uint8_t ports[Usbpp::Device::MAX_PORT_NUMBERS];
+        int count = libusb_get_port_numbers(pimpl->m_device, ports, Usbpp::Device::MAX_PORT_NUMBERS);
+        if (count > 0) {
+            ports_vec->reserve(count);
+            for (int i = 0; i < count; i++) {
+                ports_vec->push_back(ports[i]);
+            }
+        }
+    }
+    return ports_vec;
 }
 
 int Device::getConfiguration() {

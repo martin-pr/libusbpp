@@ -254,6 +254,11 @@ Context& Context::operator=(Context&& other) noexcept {
 	return *this;
 }
 
+template <typename ... Ts>
+void Context::setOption(libusb_option option, Ts ... args) {
+    libusb_set_option( pimpl->m_ctx, option, args...);
+}
+
 std::vector<Device> Context::getDevices() {
 	libusb_device** devices;
 	int count = libusb_get_device_list(pimpl->m_ctx, &devices);
